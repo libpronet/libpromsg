@@ -6,6 +6,8 @@ echo " ERROR! JAVA_HOME is not set. "
 
 else
 
+echo " JAVA_HOME: ${JAVA_HOME} "
+
 #
 # configure.ac ---> aclocal.m4
 #
