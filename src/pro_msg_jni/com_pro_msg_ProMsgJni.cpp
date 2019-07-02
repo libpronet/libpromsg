@@ -440,22 +440,18 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         return (0);
     }
 
-    const jobject listener2 = env->NewGlobalRef(listener);
-    if (listener2 == NULL)
-    {
-        env->DeleteLocalRef(clazz);
-
-        return (0);
-    }
-
     const jmethodID onOkMsg    = env->GetMethodID(clazz, "onOkMsg"   , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
     const jmethodID onRecvMsg  = env->GetMethodID(clazz, "onRecvMsg" , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
     const jmethodID onCloseMsg = env->GetMethodID(clazz, "onCloseMsg", "(JIIZ)V");
     env->DeleteLocalRef(clazz); /* release local reference */
     if (onOkMsg == NULL || onRecvMsg == NULL || onCloseMsg == NULL)
     {
-        env->DeleteGlobalRef(listener2);
+        return (0);
+    }
 
+    const jobject listener2 = env->NewGlobalRef(listener);
+    if (listener2 == NULL)
+    {
         return (0);
     }
 
@@ -545,7 +541,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -584,7 +580,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -623,7 +619,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -662,7 +658,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -698,7 +694,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -737,7 +733,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -794,7 +790,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
             MSG_USER_java2cpp_i(env, javaUser, cppUser);
 
             cppDstUsers.push_back(cppUser);
-            env->DeleteLocalRef(javaUser);
+            env->DeleteLocalRef(javaUser); /* release local reference */
         }
     }
 
@@ -808,7 +804,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
             return (JNI_FALSE);
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr == g_s_clients.end())
         {
             return (JNI_FALSE);
@@ -863,7 +859,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSetOutputRedline(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr == g_s_clients.end())
         {
             return;
@@ -894,7 +890,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
         if (itr != g_s_clients.end())
         {
             client2 = (CMsgClientJni*)*itr;
@@ -956,22 +952,18 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         return (0);
     }
 
-    const jobject listener2 = env->NewGlobalRef(listener);
-    if (listener2 == NULL)
-    {
-        env->DeleteLocalRef(clazz);
-
-        return (0);
-    }
-
     const jmethodID onOkUser    = env->GetMethodID(clazz, "onOkUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
     const jmethodID onCloseUser = env->GetMethodID(clazz, "onCloseUser" , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
     const jmethodID onRecvMsg   = env->GetMethodID(clazz, "onRecvMsg"   , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
     env->DeleteLocalRef(clazz); /* release local reference */
     if (onOkUser == NULL || onCloseUser == NULL || onRecvMsg == NULL)
     {
-        env->DeleteGlobalRef(listener2);
+        return (0);
+    }
 
+    const jobject listener2 = env->NewGlobalRef(listener);
+    if (listener2 == NULL)
+    {
         return (0);
     }
 
@@ -1060,7 +1052,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
         if (itr != g_s_servers.end())
         {
             server2 = (CMsgServerJni*)*itr;
@@ -1102,7 +1094,7 @@ Java_com_pro_msg_ProMsgJni_msgServerKickoutUser(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
         if (itr == g_s_servers.end())
         {
             return;
@@ -1157,7 +1149,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
             MSG_USER_java2cpp_i(env, javaUser, cppUser);
 
             cppDstUsers.push_back(cppUser);
-            env->DeleteLocalRef(javaUser);
+            env->DeleteLocalRef(javaUser); /* release local reference */
         }
     }
 
@@ -1171,7 +1163,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
             return (JNI_FALSE);
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
         if (itr == g_s_servers.end())
         {
             return (JNI_FALSE);
@@ -1226,7 +1218,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
         if (itr == g_s_servers.end())
         {
             return;
@@ -1257,7 +1249,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
         if (itr != g_s_servers.end())
         {
             server2 = (CMsgServerJni*)*itr;

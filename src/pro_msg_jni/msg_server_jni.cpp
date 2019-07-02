@@ -136,7 +136,7 @@ CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
     const jstring javaPublicIp = NewJavaString_i(env, userPublicIp);
     if (javaPublicIp == NULL)
     {
-        env->DeleteLocalRef(javaUser);
+        env->DeleteLocalRef(javaUser); /* release local reference */
         JniUtilDetach();
 
         return;
@@ -149,8 +149,8 @@ CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
         (jobject)javaUser,
         (jstring)javaPublicIp
         );
-    env->DeleteLocalRef(javaPublicIp);
-    env->DeleteLocalRef(javaUser);
+    env->DeleteLocalRef(javaPublicIp); /* release local reference */
+    env->DeleteLocalRef(javaUser);     /* release local reference */
     JniUtilDetach();
 }
 
@@ -204,7 +204,7 @@ CMsgServerJni::OnCloseUser(IRtpMsgServer*      msgServer,
         (jint)   errorCode,
         (jint)   sslCode
         );
-    env->DeleteLocalRef(javaUser);
+    env->DeleteLocalRef(javaUser); /* release local reference */
     JniUtilDetach();
 }
 
@@ -260,7 +260,7 @@ CMsgServerJni::OnRecvMsg(IRtpMsgServer*      msgServer,
     const jobject javaUser = NewJavaUser_i(env, *srcUser);
     if (javaUser == NULL)
     {
-        env->DeleteLocalRef(javaBuf);
+        env->DeleteLocalRef(javaBuf); /* release local reference */
         JniUtilDetach();
 
         return;
@@ -274,7 +274,7 @@ CMsgServerJni::OnRecvMsg(IRtpMsgServer*      msgServer,
         (jint)      charset,
         (jobject)   javaUser
         );
-    env->DeleteLocalRef(javaUser);
-    env->DeleteLocalRef(javaBuf);
+    env->DeleteLocalRef(javaUser); /* release local reference */
+    env->DeleteLocalRef(javaBuf);  /* release local reference */
     JniUtilDetach();
 }
