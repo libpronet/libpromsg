@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ "${JAVA_HOME}" = "" ]; then
+
+echo " ERROR! JAVA_HOME is not set. "
+
+else
+
 #
 # configure.ac ---> aclocal.m4
 #
@@ -28,3 +34,5 @@ CXXFLAGS="-O2 -Wall -march=pentium4 -m32" \
 LDFLAGS="" $@
 
 rm -f ./configure
+
+fi
