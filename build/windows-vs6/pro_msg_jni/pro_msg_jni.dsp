@@ -147,6 +147,22 @@ SOURCE=..\..\..\src\pro_msg_jni\msg_server.h
 SOURCE=..\..\..\src\pro_msg_jni\msg_server_jni.h
 # End Source File
 # End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+# Begin Source File
+
+SOURCE=..\..\..\src\pro_msg_jni\manifest.bin
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro_msg_jni\pro_msg_jni.rc
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro_msg_jni\resource.h
+# End Source File
+# End Group
 # Begin Group "java"
 
 # PROP Default_Filter ""
