@@ -111,7 +111,7 @@ public class ProMsgJni
         String            configFileName,
         short             mmType,     /* = 0, 11 ~ 20 */
         String            serverIp,   /* = null */
-        int               serverPort, /* = 0 */
+        int               serverPort, /* = 0, 1 ~ 65535 */
         PRO_MSG_USER      user,       /* = null */
         String            password,   /* = null */
         String            localIp     /* = null */

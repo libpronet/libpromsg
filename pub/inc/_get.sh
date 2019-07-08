@@ -1,6 +1,10 @@
-cp ../../src/pro_msg_jni/com/pro/msg/ProMsgJni.java ./com/pro/msg/
+#!/bin/sh
 
-cp ../../src/pro_msg_jni/msg_client.h               ./cpp/
-cp ../../src/pro_msg_jni/msg_client.cpp             ./cpp/
-cp ../../src/pro_msg_jni/msg_server.h               ./cpp/
-cp ../../src/pro_msg_jni/msg_server.cpp             ./cpp/
+THIS_DIR=$(dirname $(readlink -f "$0"))
+
+cp ${THIS_DIR}/../../src/pro_msg_jni/com/pro/msg/ProMsgJni.java ${THIS_DIR}/com/pro/msg/
+
+cp ${THIS_DIR}/../../src/pro_msg_jni/msg_client.h               ${THIS_DIR}/cpp/
+cp ${THIS_DIR}/../../src/pro_msg_jni/msg_client.cpp             ${THIS_DIR}/cpp/
+cp ${THIS_DIR}/../../src/pro_msg_jni/msg_server.h               ${THIS_DIR}/cpp/
+cp ${THIS_DIR}/../../src/pro_msg_jni/msg_server.cpp             ${THIS_DIR}/cpp/

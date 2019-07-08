@@ -1,3 +1,5 @@
 #!/bin/sh
 
-cp ../../build/linux-gcc-r/x86_64/pro_msg_jni/libpro_msg_jni.so ./linux-gcc/x86_64/
+THIS_DIR=$(dirname $(readlink -f "$0"))
+
+cp ${THIS_DIR}/../../build/linux-gcc-r/x86_64/pro_msg_jni/libpro_msg_jni.so ${THIS_DIR}/linux-gcc/x86_64/
