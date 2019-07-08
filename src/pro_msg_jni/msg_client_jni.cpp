@@ -53,13 +53,39 @@ NewJavaUser_i(JNIEnv*             env,
 ////
 
 CMsgClientJni*
-CMsgClientJni::CreateInstance(jobject   listener,
-                              jmethodID onOkMsg,
-                              jmethodID onRecvMsg,
-                              jmethodID onCloseMsg)
+CMsgClientJni::CreateInstance(JNIEnv* env,
+                              jobject listener)
 {
+    assert(env != NULL);
+    assert(listener != NULL);
+    if (env == NULL || listener == NULL)
+    {
+        return (NULL);
+    }
+
+    const jclass clazz = env->GetObjectClass(listener);
+    if (clazz == NULL)
+    {
+        return (NULL);
+    }
+
+    const jmethodID onOkMsg    = env->GetMethodID(clazz, "onOkMsg"   , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
+    const jmethodID onRecvMsg  = env->GetMethodID(clazz, "onRecvMsg" , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
+    const jmethodID onCloseMsg = env->GetMethodID(clazz, "onCloseMsg", "(JIIZ)V");
+    env->DeleteLocalRef(clazz); /* release local reference */
+    if (onOkMsg == NULL || onRecvMsg == NULL || onCloseMsg == NULL)
+    {
+        return (NULL);
+    }
+
+    const jobject listener2 = env->NewGlobalRef(listener);
+    if (listener2 == NULL)
+    {
+        return (NULL);
+    }
+
     CMsgClientJni* const client =
-        new CMsgClientJni(listener, onOkMsg, onRecvMsg, onCloseMsg);
+        new CMsgClientJni(listener2, onOkMsg, onRecvMsg, onCloseMsg);
 
     return (client);
 }

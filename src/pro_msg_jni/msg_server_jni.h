@@ -32,10 +32,8 @@ class CMsgServerJni : public CMsgServer
 public:
 
     static CMsgServerJni* CreateInstance(
-        jobject   listener,
-        jmethodID onOkUser,
-        jmethodID onCloseUser,
-        jmethodID onRecvMsg
+        JNIEnv* env,
+        jobject listener
         );
 
 private:

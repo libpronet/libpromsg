@@ -360,7 +360,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
                                            jstring configFileName,
                                            jshort  mmType,     /* = 0, 11 ~ 20 */
                                            jstring serverIp,   /* = null */
-                                           jint    serverPort, /* = 0 */
+                                           jint    serverPort, /* = 0, 1 ~ 65535 */
                                            jobject user,       /* = null */
                                            jstring password,   /* = null */
                                            jstring localIp)    /* = null */
@@ -409,6 +409,11 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         }
     }
 
+    if (serverPort > 0 && serverPort <= 65535)
+    {
+        cppServerPort = (unsigned short)serverPort;
+    }
+
     if (user != NULL)
     {
         MSG_USER_java2cpp_i(env, user, cppUser);
@@ -434,27 +439,6 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         }
     }
 
-    const jclass clazz = env->GetObjectClass(listener);
-    if (clazz == NULL)
-    {
-        return (0);
-    }
-
-    const jmethodID onOkMsg    = env->GetMethodID(clazz, "onOkMsg"   , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
-    const jmethodID onRecvMsg  = env->GetMethodID(clazz, "onRecvMsg" , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
-    const jmethodID onCloseMsg = env->GetMethodID(clazz, "onCloseMsg", "(JIIZ)V");
-    env->DeleteLocalRef(clazz); /* release local reference */
-    if (onOkMsg == NULL || onRecvMsg == NULL || onCloseMsg == NULL)
-    {
-        return (0);
-    }
-
-    const jobject listener2 = env->NewGlobalRef(listener);
-    if (listener2 == NULL)
-    {
-        return (0);
-    }
-
     CMsgClientJni* client = NULL;
 
     {
@@ -463,16 +447,12 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         assert(g_s_reactor != NULL);
         if (g_s_reactor == NULL)
         {
-            env->DeleteGlobalRef(listener2);
-
             return (0);
         }
 
-        client = CMsgClientJni::CreateInstance(listener2, onOkMsg, onRecvMsg, onCloseMsg);
+        client = CMsgClientJni::CreateInstance(env, listener);
         if (client == NULL)
         {
-            env->DeleteGlobalRef(listener2);
-
             return (0);
         }
 
@@ -531,6 +511,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
                                             jclass  thiz,
                                             jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (NULL);
@@ -570,6 +551,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
                                                 jclass  thiz,
                                                 jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (NULL);
@@ -609,6 +591,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
                                                jclass  thiz,
                                                jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (NULL);
@@ -648,6 +631,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
                                                  jclass  thiz,
                                                  jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (0);
@@ -684,6 +668,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
                                                 jclass  thiz,
                                                 jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (NULL);
@@ -723,6 +708,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
                                                   jclass  thiz,
                                                   jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (0);
@@ -762,6 +748,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
+    assert(client != 0);
     if (client == 0 || buf == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
         return (JNI_FALSE);
@@ -844,6 +831,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSetOutputRedline(JNIEnv* env,
                                                      jlong   client,
                                                      jlong   redlineBytes)
 {
+    assert(client != 0);
     if (client == 0 || redlineBytes <= 0)
     {
         return;
@@ -880,6 +868,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
                                                      jclass  thiz,
                                                      jlong   client)
 {
+    assert(client != 0);
     if (client == 0)
     {
         return (0);
@@ -946,27 +935,6 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         cppMmType = (RTP_MM_TYPE)mmType;
     }
 
-    const jclass clazz = env->GetObjectClass(listener);
-    if (clazz == NULL)
-    {
-        return (0);
-    }
-
-    const jmethodID onOkUser    = env->GetMethodID(clazz, "onOkUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
-    const jmethodID onCloseUser = env->GetMethodID(clazz, "onCloseUser" , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
-    const jmethodID onRecvMsg   = env->GetMethodID(clazz, "onRecvMsg"   , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
-    env->DeleteLocalRef(clazz); /* release local reference */
-    if (onOkUser == NULL || onCloseUser == NULL || onRecvMsg == NULL)
-    {
-        return (0);
-    }
-
-    const jobject listener2 = env->NewGlobalRef(listener);
-    if (listener2 == NULL)
-    {
-        return (0);
-    }
-
     CMsgServerJni* server = NULL;
 
     {
@@ -975,16 +943,12 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         assert(g_s_reactor != NULL);
         if (g_s_reactor == NULL)
         {
-            env->DeleteGlobalRef(listener2);
-
             return (0);
         }
 
-        server = CMsgServerJni::CreateInstance(listener2, onOkUser, onCloseUser, onRecvMsg);
+        server = CMsgServerJni::CreateInstance(env, listener);
         if (server == NULL)
         {
-            env->DeleteGlobalRef(listener2);
-
             return (0);
         }
 
@@ -1042,6 +1006,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
                                                  jclass  thiz,
                                                  jlong   server)
 {
+    assert(server != 0);
     if (server == 0)
     {
         return (0);
@@ -1079,6 +1044,7 @@ Java_com_pro_msg_ProMsgJni_msgServerKickoutUser(JNIEnv* env,
                                                 jlong   server,
                                                 jobject user)
 {
+    assert(server != 0);
     if (server == 0 || user == NULL)
     {
         return;
@@ -1121,6 +1087,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
+    assert(server != 0);
     if (server == 0 || buf == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
         return (JNI_FALSE);
@@ -1203,6 +1170,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline(JNIEnv* env,
                                                      jlong   server,
                                                      jlong   redlineBytes)
 {
+    assert(server != 0);
     if (server == 0 || redlineBytes <= 0)
     {
         return;
@@ -1239,6 +1207,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
                                                      jclass  thiz,
                                                      jlong   server)
 {
+    assert(server != 0);
     if (server == 0)
     {
         return (0);
