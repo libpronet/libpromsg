@@ -69,9 +69,9 @@ CMsgServerJni::CreateInstance(JNIEnv* env,
         return (NULL);
     }
 
-    const jmethodID onOkUser    = env->GetMethodID(clazz, "onOkUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
-    const jmethodID onCloseUser = env->GetMethodID(clazz, "onCloseUser" , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
-    const jmethodID onRecvMsg   = env->GetMethodID(clazz, "onRecvMsg"   , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
+    const jmethodID onOkUser    = env->GetMethodID(clazz, "msgServerOnOkUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
+    const jmethodID onCloseUser = env->GetMethodID(clazz, "msgServerOnCloseUser" , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
+    const jmethodID onRecvMsg   = env->GetMethodID(clazz, "msgServerOnRecvMsg"   , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
     env->DeleteLocalRef(clazz); /* release local reference */
     if (onOkUser == NULL || onCloseUser == NULL || onRecvMsg == NULL)
     {

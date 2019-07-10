@@ -50,20 +50,20 @@ public class ProMsgJni
 
     public interface MsgClientListener
     {
-        public void onOkMsg(    /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V */
+        public void msgClientOnOk(    /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V */
             long         msgClient,
             PRO_MSG_USER myUser,
             String       myPublicIp
             );
 
-        public void onRecvMsg(  /* signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V */
+        public void msgClientOnRecv(  /* signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V */
             long         msgClient,
             byte[]       buf,
             int          charset,
             PRO_MSG_USER srcUser
             );
 
-        public void onCloseMsg( /* signature: (JIIZ)V */
+        public void msgClientOnClose( /* signature: (JIIZ)V */
             long    msgClient,
             int     errorCode,
             int     sslCode,
@@ -73,20 +73,20 @@ public class ProMsgJni
 
     public interface MsgServerListener
     {
-        public void onOkUser(    /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V */
+        public void msgServerOnOkUser(    /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V */
             long         msgServer,
             PRO_MSG_USER user,
             String       userPublicIp
             );
 
-        public void onCloseUser( /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V */
+        public void msgServerOnCloseUser( /* signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V */
             long         msgServer,
             PRO_MSG_USER user,
             int          errorCode,
             int          sslCode
             );
 
-        public void onRecvMsg(   /* signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V */
+        public void msgServerOnRecvMsg(   /* signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V */
             long         msgServer,
             byte[]       buf,
             int          charset,
