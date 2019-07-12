@@ -372,10 +372,10 @@ CMsgServer::Init(IProReactor* reactor,
 
         msgServer->SetOutputRedlineToUser(configInfo.msgs_redline_bytes);
 
-        m_reactor    = reactor;
-        m_configInfo = configInfo;
-        m_sslConfig  = sslConfig;
-        m_msgServer  = msgServer;
+        m_reactor       = reactor;
+        m_msgConfigInfo = configInfo;
+        m_sslConfig     = sslConfig;
+        m_msgServer     = msgServer;
     }
 
     return (true);
@@ -565,15 +565,15 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 
         if (user->classId == 1)      /* 1-... */
         {
-            password = &m_configInfo.msgs_password_cid1[0];
+            password = &m_msgConfigInfo.msgs_password_cid1[0];
         }
         else if (user->classId == 2) /* 2-... */
         {
-            password = &m_configInfo.msgs_password_cid2[0];
+            password = &m_msgConfigInfo.msgs_password_cid2[0];
         }
         else                         /* others */
         {
-            password = &m_configInfo.msgs_password_cidx[0];
+            password = &m_msgConfigInfo.msgs_password_cidx[0];
         }
 
         if (!CheckRtpServiceData(nonce, password, hash))

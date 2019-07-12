@@ -368,16 +368,10 @@ CMsgClient::Init(IProReactor*        reactor,
 
         msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
 
-        m_reactor    = reactor;
-        m_configInfo = configInfo;
-        m_sslConfig  = sslConfig;
-        m_msgClient  = msgClient;
-
-        if (!m_configInfo.msgc_password.empty())
-        {
-            ProZeroMemory(&m_configInfo.msgc_password[0], m_configInfo.msgc_password.length());
-            m_configInfo.msgc_password = "";
-        }
+        m_reactor       = reactor;
+        m_msgConfigInfo = configInfo;
+        m_sslConfig     = sslConfig;
+        m_msgClient     = msgClient;
     }
 
     return (true);
@@ -586,6 +580,48 @@ CMsgClient::GetOutputRedline() const
     }
 
     return (redlineBytes);
+}
+
+bool
+CMsgClient::Reconnect()
+{
+    IRtpMsgClient* oldMsgClient = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_reactor == NULL || m_msgClient == NULL)
+        {
+            return (false);
+        }
+
+        IRtpMsgClient* const msgClient = CreateRtpMsgClient(
+            this,
+            m_reactor,
+            m_msgConfigInfo.msgc_mm_type,
+            m_sslConfig,
+            m_msgConfigInfo.msgc_ssl_sni.c_str(),
+            m_msgConfigInfo.msgc_server_ip.c_str(),
+            m_msgConfigInfo.msgc_server_port,
+            &m_msgConfigInfo.msgc_id,
+            m_msgConfigInfo.msgc_password.c_str(),
+            m_msgConfigInfo.msgc_local_ip.c_str(),
+            m_msgConfigInfo.msgc_handshake_timeout
+            );
+        if (msgClient == NULL)
+        {
+            return (false);
+        }
+
+        msgClient->SetOutputRedline(m_msgConfigInfo.msgc_redline_bytes);
+
+        oldMsgClient = m_msgClient;
+        m_msgClient  = msgClient;
+    }
+
+    DeleteRtpMsgClient(oldMsgClient);
+
+    return (true);
 }
 
 void

@@ -175,11 +175,11 @@ protected:
 
 protected:
 
-    IProReactor*            m_reactor;
-    MSG_SERVER_CONFIG_INFO  m_configInfo;
-    PRO_SSL_SERVER_CONFIG*  m_sslConfig;
-    IRtpMsgServer*          m_msgServer;
-    mutable CProThreadMutex m_lock;
+    IProReactor*                     m_reactor;
+    MSG_SERVER_CONFIG_INFO           m_msgConfigInfo;
+    PRO_SSL_SERVER_CONFIG*           m_sslConfig;
+    IRtpMsgServer*                   m_msgServer;
+    mutable CProRecursiveThreadMutex m_lock;
 
     DECLARE_SGI_POOL(0);
 };

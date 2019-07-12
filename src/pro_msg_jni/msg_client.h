@@ -133,6 +133,8 @@ public:
 
     unsigned long GetOutputRedline() const;
 
+    bool Reconnect();
+
 protected:
 
     CMsgClient();
@@ -162,11 +164,11 @@ protected:
 
 protected:
 
-    IProReactor*            m_reactor;
-    MSG_CLIENT_CONFIG_INFO  m_configInfo;
-    PRO_SSL_CLIENT_CONFIG*  m_sslConfig;
-    IRtpMsgClient*          m_msgClient;
-    mutable CProThreadMutex m_lock;
+    IProReactor*                     m_reactor;
+    MSG_CLIENT_CONFIG_INFO           m_msgConfigInfo;
+    PRO_SSL_CLIENT_CONFIG*           m_sslConfig;
+    IRtpMsgClient*                   m_msgClient;
+    mutable CProRecursiveThreadMutex m_lock;
 
     DECLARE_SGI_POOL(0);
 };
