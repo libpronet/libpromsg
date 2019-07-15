@@ -52,7 +52,15 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
+        if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+            {
+                configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
         {
             const int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -104,14 +112,6 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
             if (value > 0)
             {
                 configInfo.msgs_redline_bytes = value;
-            }
-        }
-        else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
-        {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
-            {
-                configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
             }
         }
         else if (stricmp(configName.c_str(), "msgs_enable_ssl") == 0)
@@ -397,7 +397,7 @@ CMsgServer::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgServer == NULL)
+        if (m_reactor == NULL)
         {
             return;
         }
@@ -498,6 +498,7 @@ CMsgServer::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgServer->SetOutputRedlineToUser(redlineBytes);
+        m_msgConfigInfo.msgs_redline_bytes = m_msgServer->GetOutputRedlineToUser();
     }
 }
 
@@ -509,10 +510,7 @@ CMsgServer::GetOutputRedline() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_msgServer != NULL)
-        {
-            redlineBytes = m_msgServer->GetOutputRedlineToUser();
-        }
+        redlineBytes = m_msgConfigInfo.msgs_redline_bytes;
     }
 
     return (redlineBytes);

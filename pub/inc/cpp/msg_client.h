@@ -34,13 +34,13 @@ struct MSG_CLIENT_CONFIG_INFO
 {
     MSG_CLIENT_CONFIG_INFO()
     {
+        msgc_mm_type             = RTP_MMT_MSG;
         msgc_server_ip           = "127.0.0.1";
         msgc_server_port         = 3000;
         msgc_password            = "test";
         msgc_local_ip            = "0.0.0.0";
         msgc_handshake_timeout   = 20;
         msgc_redline_bytes       = 1024000;
-        msgc_mm_type             = RTP_MMT_MSG;
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
@@ -64,6 +64,7 @@ struct MSG_CLIENT_CONFIG_INFO
         }
     }
 
+    RTP_MM_TYPE                  msgc_mm_type; /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     CProStlString                msgc_server_ip;
     unsigned short               msgc_server_port;
     RTP_MSG_USER                 msgc_id;
@@ -71,7 +72,6 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
     unsigned int                 msgc_redline_bytes;
-    RTP_MM_TYPE                  msgc_mm_type; /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         msgc_enable_ssl;
     bool                         msgc_ssl_enable_sha1cert;

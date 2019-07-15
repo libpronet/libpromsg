@@ -145,6 +145,8 @@ public class ProMsgJni
 
     public static native long msgClientGetOutputRedline(long client);
 
+    public static native boolean msgClientReconnect(long client);
+
     /*---------------------------------------------------------------------*/
 
     public static native long msgServerCreate(
