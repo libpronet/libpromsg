@@ -17,6 +17,7 @@
  */
 
 #include "msg_client.h"
+#include "pro/pro_bsd_wrapper.h"
 #include "pro/pro_config_file.h"
 #include "pro/pro_memory_pool.h"
 #include "pro/pro_ref_count.h"
@@ -51,7 +52,15 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
+        if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+            {
+                configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
         {
             if (!configValue.empty())
             {
@@ -104,14 +113,6 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
             if (value > 0)
             {
                 configInfo.msgc_redline_bytes = value;
-            }
-        }
-        else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
-        {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
-            {
-                configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
         }
         else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
@@ -265,6 +266,22 @@ CMsgClient::Init(IProReactor*        reactor,
         configInfo.msgc_local_ip    = localIp;
     }
 
+    /*
+     * DNS, for reconnecting
+     */
+    {
+        const PRO_UINT32 serverIp2 = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        if (serverIp2 == (PRO_UINT32)-1 || serverIp2 == 0)
+        {
+            return (false);
+        }
+
+        char serverIpByDNS[64] = "";
+        pbsd_inet_ntoa(serverIp2, serverIpByDNS);
+
+        configInfo.msgc_server_ip = serverIpByDNS;
+    }
+
     PRO_SSL_CLIENT_CONFIG* sslConfig = NULL;
     IRtpMsgClient*         msgClient = NULL;
 
@@ -393,7 +410,7 @@ CMsgClient::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return;
         }
@@ -496,15 +513,10 @@ CMsgClient::GetLocalPort() const
 const char*
 CMsgClient::GetRemoteIp(char remoteIp[64]) const
 {
-    remoteIp[0] = '\0';
-
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_msgClient != NULL)
-        {
-            m_msgClient->GetRemoteIp(remoteIp);
-        }
+        strncpy_pro(remoteIp, 64, m_msgConfigInfo.msgc_server_ip.c_str());
     }
 
     return (remoteIp);
@@ -518,10 +530,7 @@ CMsgClient::GetRemotePort() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_msgClient != NULL)
-        {
-            remotePort = m_msgClient->GetRemotePort();
-        }
+        remotePort = m_msgConfigInfo.msgc_server_port;
     }
 
     return (remotePort);
@@ -562,6 +571,7 @@ CMsgClient::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgClient->SetOutputRedline(redlineBytes);
+        m_msgConfigInfo.msgc_redline_bytes = m_msgClient->GetOutputRedline();
     }
 }
 
@@ -573,10 +583,7 @@ CMsgClient::GetOutputRedline() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_msgClient != NULL)
-        {
-            redlineBytes = m_msgClient->GetOutputRedline();
-        }
+        redlineBytes = m_msgConfigInfo.msgc_redline_bytes;
     }
 
     return (redlineBytes);
@@ -590,7 +597,7 @@ CMsgClient::Reconnect()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return (false);
         }
@@ -657,11 +664,6 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
-        char           remoteIp[64] = "";
-        unsigned short remotePort   = 0;
-        msgClient->GetRemoteIp(remoteIp);
-        remotePort = msgClient->GetRemotePort();
-
         printf(
             "\n"
             " CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
@@ -672,8 +674,8 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
-            remoteIp,
-            (unsigned int)remotePort
+            m_msgConfigInfo.msgc_server_ip.c_str(),
+            (unsigned int)m_msgConfigInfo.msgc_server_port
             );
     }}}
 }
@@ -712,8 +714,8 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
     }
 
     {{{
-        RTP_MSG_USER user;
-        msgClient->GetUser(&user);
+        RTP_MSG_USER myUser;
+        msgClient->GetUser(&myUser);
 
         printf(
             "\n"
@@ -723,9 +725,9 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
             (unsigned int)srcUser->classId,
             srcUser->UserId(),
             (unsigned int)srcUser->instId,
-            (unsigned int)user.classId,
-            user.UserId(),
-            (unsigned int)user.instId,
+            (unsigned int)myUser.classId,
+            myUser.UserId(),
+            (unsigned int)myUser.instId,
             msg.c_str()
             );
     }}}
@@ -759,27 +761,22 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
     }
 
     {{{
-        RTP_MSG_USER user;
-        msgClient->GetUser(&user);
-
-        char           remoteIp[64] = "";
-        unsigned short remotePort   = 0;
-        msgClient->GetRemoteIp(remoteIp);
-        remotePort = msgClient->GetRemotePort();
+        RTP_MSG_USER myUser;
+        msgClient->GetUser(&myUser);
 
         printf(
             "\n"
             " CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
-            (unsigned int)user.classId,
-            user.UserId(),
-            (unsigned int)user.instId,
+            (unsigned int)myUser.classId,
+            myUser.UserId(),
+            (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,
-            remoteIp,
-            (unsigned int)remotePort
+            m_msgConfigInfo.msgc_server_ip.c_str(),
+            (unsigned int)m_msgConfigInfo.msgc_server_port
             );
     }}}
 }

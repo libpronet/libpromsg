@@ -898,6 +898,45 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
     return (redlineBytes);
 }
 
+JNIEXPORT
+jboolean
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgClientReconnect(JNIEnv* env,
+                                              jclass  thiz,
+                                              jlong   client)
+{
+    assert(client != 0);
+    if (client == 0)
+    {
+        return (JNI_FALSE);
+    }
+
+    CMsgClientJni* client2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_reactor == NULL)
+        {
+            return (JNI_FALSE);
+        }
+
+        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
+        if (itr == g_s_clients.end())
+        {
+            return (JNI_FALSE);
+        }
+
+        client2 = (CMsgClientJni*)*itr;
+        client2->AddRef();
+    }
+
+    const bool ret = client2->Reconnect();
+    client2->Release();
+
+    return (ret ? JNI_TRUE : JNI_FALSE);
+}
+
 /*-------------------------------------------------------------------------*/
 
 JNIEXPORT

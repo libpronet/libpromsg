@@ -34,13 +34,13 @@ struct MSG_SERVER_CONFIG_INFO
 {
     MSG_SERVER_CONFIG_INFO()
     {
+        msgs_mm_type             = RTP_MMT_MSG;
         msgs_hub_port            = 3000;
         msgs_password_cid1       = "test";
         msgs_password_cid2       = "test";
         msgs_password_cidx       = "test";
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes       = 1024000;
-        msgs_mm_type             = RTP_MMT_MSG;
 
         msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
@@ -75,13 +75,13 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_password_cidx = "";
     }
 
+    RTP_MM_TYPE                  msgs_mm_type;       /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     unsigned short               msgs_hub_port;
     CProStlString                msgs_password_cid1; /* for 1-... */
     CProStlString                msgs_password_cid2; /* for 2-... */
     CProStlString                msgs_password_cidx; /* for x-... */
     unsigned int                 msgs_handshake_timeout;
     unsigned int                 msgs_redline_bytes;
-    RTP_MM_TYPE                  msgs_mm_type;       /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         msgs_enable_ssl;
     bool                         msgs_ssl_forced;

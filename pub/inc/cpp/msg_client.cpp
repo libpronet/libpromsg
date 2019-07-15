@@ -17,6 +17,7 @@
  */
 
 #include "msg_client.h"
+#include "pro/pro_bsd_wrapper.h"
 #include "pro/pro_config_file.h"
 #include "pro/pro_memory_pool.h"
 #include "pro/pro_ref_count.h"
@@ -51,7 +52,15 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
+        if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+            {
+                configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
         {
             if (!configValue.empty())
             {
@@ -104,14 +113,6 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
             if (value > 0)
             {
                 configInfo.msgc_redline_bytes = value;
-            }
-        }
-        else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
-        {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
-            {
-                configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
         }
         else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
@@ -265,6 +266,22 @@ CMsgClient::Init(IProReactor*        reactor,
         configInfo.msgc_local_ip    = localIp;
     }
 
+    /*
+     * DNS, for reconnecting
+     */
+    {
+        const PRO_UINT32 serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        if (serverIp == (PRO_UINT32)-1 || serverIp == 0)
+        {
+            return (false);
+        }
+
+        char serverIpByDNS[64] = "";
+        pbsd_inet_ntoa(serverIp, serverIpByDNS);
+
+        configInfo.msgc_server_ip = serverIpByDNS;
+    }
+
     PRO_SSL_CLIENT_CONFIG* sslConfig = NULL;
     IRtpMsgClient*         msgClient = NULL;
 
@@ -393,7 +410,7 @@ CMsgClient::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return;
         }
@@ -562,6 +579,7 @@ CMsgClient::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgClient->SetOutputRedline(redlineBytes);
+        m_msgConfigInfo.msgc_redline_bytes = m_msgClient->GetOutputRedline();
     }
 }
 
@@ -573,10 +591,7 @@ CMsgClient::GetOutputRedline() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_msgClient != NULL)
-        {
-            redlineBytes = m_msgClient->GetOutputRedline();
-        }
+        redlineBytes = m_msgConfigInfo.msgc_redline_bytes;
     }
 
     return (redlineBytes);
@@ -590,7 +605,7 @@ CMsgClient::Reconnect()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return (false);
         }

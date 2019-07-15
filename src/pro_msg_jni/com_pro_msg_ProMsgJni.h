@@ -121,6 +121,14 @@ JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline
 
 /*
  * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgClientReconnect
+ * Signature: (J)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgClientReconnect
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
  * Method:    msgServerCreate
  * Signature: (Lcom/pro/msg/ProMsgJni/MsgServerListener;Ljava/lang/String;S)J
  */

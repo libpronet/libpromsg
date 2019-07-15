@@ -1,11 +1,17 @@
 prolibdir = ${prefix}/libpromsg/lib
 proincdir = ${prefix}/libpromsg/include/com/pro/msg
+procppdir = ${prefix}/libpromsg/include/cpp
 
 #############################################################################
 
 prolib_PROGRAMS = libpro_msg_jni.so
 
 proinc_HEADERS = ../../../../src/pro_msg_jni/com/pro/msg/ProMsgJni.java
+
+procpp_DATA = ../../../../src/pro_msg_jni/msg_client.cpp \
+              ../../../../src/pro_msg_jni/msg_client.h   \
+              ../../../../src/pro_msg_jni/msg_server.cpp \
+              ../../../../src/pro_msg_jni/msg_server.h
 
 libpro_msg_jni_so_SOURCES = ../../../../src/pro_msg_jni/com_pro_msg_ProMsgJni.cpp \
                             ../../../../src/pro_msg_jni/jni_util.cpp              \
