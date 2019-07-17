@@ -558,6 +558,7 @@ CMsgClient::SendMsg(const void*         buf,
     }
 
     const bool ret = msgClient->SendMsg(buf, size, charset, dstUsers, dstUserCount);
+    msgClient->Release();
 
     return (ret);
 }
