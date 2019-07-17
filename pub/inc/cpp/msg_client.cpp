@@ -479,7 +479,7 @@ CMsgClient::GetSslSuite(char suiteName[64]) const
 const char*
 CMsgClient::GetLocalIp(char localIp[64]) const
 {
-    localIp[0] = '\0';
+    strcpy(localIp, "0.0.0.0");
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -543,7 +543,7 @@ CMsgClient::SendMsg(const void*         buf,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    bool ret = false;
+    IRtpMsgClient* msgClient = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -553,8 +553,11 @@ CMsgClient::SendMsg(const void*         buf,
             return (false);
         }
 
-        ret = m_msgClient->SendMsg(buf, size, charset, dstUsers, dstUserCount);
+        m_msgClient->AddRef();
+        msgClient = m_msgClient;
     }
+
+    const bool ret = msgClient->SendMsg(buf, size, charset, dstUsers, dstUserCount);
 
     return (ret);
 }

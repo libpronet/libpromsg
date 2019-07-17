@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([libpromsg], [1.0.0])
+AC_INIT([libpromsg], [0.0.0])
 AM_INIT_AUTOMAKE([foreign])
 
 # Checks for programs.

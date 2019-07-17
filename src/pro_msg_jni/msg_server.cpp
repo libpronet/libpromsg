@@ -470,7 +470,7 @@ CMsgServer::SendMsg(const void*         buf,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    bool ret = false;
+    IRtpMsgServer* msgServer = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -480,8 +480,12 @@ CMsgServer::SendMsg(const void*         buf,
             return (false);
         }
 
-        ret = m_msgServer->SendMsg(buf, size, charset, dstUsers, dstUserCount);
+        m_msgServer->AddRef();
+        msgServer = m_msgServer;
     }
+
+    const bool ret = msgServer->SendMsg(buf, size, charset, dstUsers, dstUserCount);
+    msgServer->Release();
 
     return (ret);
 }
