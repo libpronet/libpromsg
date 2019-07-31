@@ -105,6 +105,14 @@ JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgClientSendMsg
 
 /*
  * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgClientSendMsg2
+ * Signature: (J[B[BI[Lcom/pro/msg/ProMsgJni/PRO_MSG_USER;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgClientSendMsg2
+  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jint, jobjectArray);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
  * Method:    msgClientSetOutputRedline
  * Signature: (JJ)V
  */
@@ -166,6 +174,14 @@ JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_msgServerKickoutUser
  */
 JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgServerSendMsg
   (JNIEnv *, jclass, jlong, jbyteArray, jint, jobjectArray);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgServerSendMsg2
+ * Signature: (J[B[BI[Lcom/pro/msg/ProMsgJni/PRO_MSG_USER;)Z
+ */
+JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgServerSendMsg2
+  (JNIEnv *, jclass, jlong, jbyteArray, jbyteArray, jint, jobjectArray);
 
 /*
  * Class:     com_pro_msg_ProMsgJni

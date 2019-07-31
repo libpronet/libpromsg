@@ -470,6 +470,20 @@ CMsgServer::SendMsg(const void*         buf,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
+    const bool ret = SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
+
+    return (ret);
+}
+
+bool
+CMsgServer::SendMsg2(const void*         buf1,
+                     unsigned long       size1,
+                     const void*         buf2,  /* = NULL */
+                     unsigned long       size2, /* = 0 */
+                     PRO_UINT16          charset,
+                     const RTP_MSG_USER* dstUsers,
+                     unsigned char       dstUserCount)
+{
     IRtpMsgServer* msgServer = NULL;
 
     {
@@ -484,7 +498,8 @@ CMsgServer::SendMsg(const void*         buf,
         msgServer = m_msgServer;
     }
 
-    const bool ret = msgServer->SendMsg(buf, size, charset, dstUsers, dstUserCount);
+    const bool ret = msgServer->SendMsg2(
+        buf1, size1, buf2, size2, charset, dstUsers, dstUserCount);
     msgServer->Release();
 
     return (ret);

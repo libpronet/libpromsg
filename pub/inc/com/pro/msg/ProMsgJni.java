@@ -138,6 +138,14 @@ public class ProMsgJni
         PRO_MSG_USER[] dstUsers /* count <= 255 */
         );
 
+    public static native boolean msgClientSendMsg2(
+        long           client,
+        byte[]         buf1,
+        byte[]         buf2,    /* = null */
+        int            charset, /* 0 ~ 65535 */
+        PRO_MSG_USER[] dstUsers /* count <= 255 */
+        );
+
     public static native void msgClientSetOutputRedline(
         long client,
         long redlineBytes
@@ -167,6 +175,14 @@ public class ProMsgJni
     public static native boolean msgServerSendMsg(
         long           server,
         byte[]         buf,
+        int            charset, /* 0 ~ 65535 */
+        PRO_MSG_USER[] dstUsers /* count <= 255 */
+        );
+
+    public static native boolean msgServerSendMsg2(
+        long           server,
+        byte[]         buf1,
+        byte[]         buf2,    /* = null */
         int            charset, /* 0 ~ 65535 */
         PRO_MSG_USER[] dstUsers /* count <= 255 */
         );

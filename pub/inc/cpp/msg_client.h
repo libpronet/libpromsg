@@ -129,6 +129,16 @@ public:
         unsigned char       dstUserCount
         );
 
+    bool SendMsg2(
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,  /* = NULL */
+        unsigned long       size2, /* = 0 */
+        PRO_UINT16          charset,
+        const RTP_MSG_USER* dstUsers,
+        unsigned char       dstUserCount
+        );
+
     void SetOutputRedline(unsigned long redlineBytes);
 
     unsigned long GetOutputRedline() const;

@@ -42,7 +42,7 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes       = 1024000;
 
-        msgs_enable_ssl          = true;
+        msgs_enable_ssl          = false;
         msgs_ssl_forced          = false;
         msgs_ssl_enable_sha1cert = true;
         msgs_ssl_keyfile         = "./server.key";
@@ -122,6 +122,16 @@ public:
     bool SendMsg(
         const void*         buf,
         unsigned long       size,
+        PRO_UINT16          charset,
+        const RTP_MSG_USER* dstUsers,
+        unsigned char       dstUserCount
+        );
+
+    bool SendMsg2(
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,  /* = NULL */
+        unsigned long       size2, /* = 0 */
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount

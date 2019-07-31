@@ -748,8 +748,25 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
+    const jboolean ret = Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(
+        env, thiz, client, buf, NULL, charset, dstUsers);
+
+    return (ret);
+}
+
+JNIEXPORT
+jboolean
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
+                                             jclass       thiz,
+                                             jlong        client,
+                                             jbyteArray   buf1,
+                                             jbyteArray   buf2,     /* = null */
+                                             jint         charset,  /* 0 ~ 65535 */
+                                             jobjectArray dstUsers) /* count <= 255 */
+{
     assert(client != 0);
-    if (client == 0 || buf == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
+    if (client == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
         return (JNI_FALSE);
     }
@@ -801,23 +818,44 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
         client2->AddRef();
     }
 
-    const jsize  buf_size = env->GetArrayLength(buf);
-    jbyte* const buf_p    = env->GetByteArrayElements(buf, NULL);
-    if (buf_size <= 0 || buf_p == NULL)
+    const jsize  buf1_size = env->GetArrayLength(buf1);
+    jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
+    if (buf1_size <= 0 || buf1_p == NULL)
     {
         client2->Release();
 
         return (JNI_FALSE);
     }
 
-    const bool ret = client2->SendMsg(
-        buf_p,
-        buf_size,
+    jsize  buf2_size = 0;
+    jbyte* buf2_p    = NULL;
+    if (buf2 != NULL)
+    {
+        buf2_size = env->GetArrayLength(buf2);
+        buf2_p    = env->GetByteArrayElements(buf2, NULL);
+        if (buf2_size <= 0 || buf2_p == NULL)
+        {
+            env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
+            client2->Release();
+
+            return (JNI_FALSE);
+        }
+    }
+
+    const bool ret = client2->SendMsg2(
+        buf1_p,
+        buf1_size,
+        buf2_p,
+        buf2_size,
         (PRO_UINT16)charset,
         &cppDstUsers[0],
         (unsigned char)cppDstUsers.size()
         );
-    env->ReleaseByteArrayElements(buf, buf_p, JNI_ABORT);
+    env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
+    if (buf2 != NULL)
+    {
+        env->ReleaseByteArrayElements(buf2, buf2_p, JNI_ABORT);
+    }
     client2->Release();
 
     return (ret ? JNI_TRUE : JNI_FALSE);
@@ -1126,8 +1164,25 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
+    const jboolean ret = Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(
+        env, thiz, server, buf, NULL, charset, dstUsers);
+
+    return (ret);
+}
+
+JNIEXPORT
+jboolean
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
+                                             jclass       thiz,
+                                             jlong        server,
+                                             jbyteArray   buf1,
+                                             jbyteArray   buf2,     /* = null */
+                                             jint         charset,  /* 0 ~ 65535 */
+                                             jobjectArray dstUsers) /* count <= 255 */
+{
     assert(server != 0);
-    if (server == 0 || buf == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
+    if (server == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
         return (JNI_FALSE);
     }
@@ -1179,23 +1234,44 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
         server2->AddRef();
     }
 
-    const jsize  buf_size = env->GetArrayLength(buf);
-    jbyte* const buf_p    = env->GetByteArrayElements(buf, NULL);
-    if (buf_size <= 0 || buf_p == NULL)
+    const jsize  buf1_size = env->GetArrayLength(buf1);
+    jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
+    if (buf1_size <= 0 || buf1_p == NULL)
     {
         server2->Release();
 
         return (JNI_FALSE);
     }
 
-    const bool ret = server2->SendMsg(
-        buf_p,
-        buf_size,
+    jsize  buf2_size = 0;
+    jbyte* buf2_p    = NULL;
+    if (buf2 != NULL)
+    {
+        buf2_size = env->GetArrayLength(buf2);
+        buf2_p    = env->GetByteArrayElements(buf2, NULL);
+        if (buf2_size <= 0 || buf2_p == NULL)
+        {
+            env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
+            server2->Release();
+
+            return (JNI_FALSE);
+        }
+    }
+
+    const bool ret = server2->SendMsg2(
+        buf1_p,
+        buf1_size,
+        buf2_p,
+        buf2_size,
         (PRO_UINT16)charset,
         &cppDstUsers[0],
         (unsigned char)cppDstUsers.size()
         );
-    env->ReleaseByteArrayElements(buf, buf_p, JNI_ABORT);
+    env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
+    if (buf2 != NULL)
+    {
+        env->ReleaseByteArrayElements(buf2, buf2_p, JNI_ABORT);
+    }
     server2->Release();
 
     return (ret ? JNI_TRUE : JNI_FALSE);
