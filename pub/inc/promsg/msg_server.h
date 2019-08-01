@@ -16,8 +16,8 @@
  * This file is part of LibProMsg (https://github.com/libpronet/libpromsg)
  */
 
-#if !defined(MSG_SERVER_H)
-#define MSG_SERVER_H
+#if !defined(____MSG_SERVER_H____)
+#define ____MSG_SERVER_H____
 
 #include "pronet/pro_memory_pool.h"
 #include "pronet/pro_ref_count.h"
@@ -42,7 +42,7 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes       = 1024000;
 
-        msgs_enable_ssl          = false;
+        msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
         msgs_ssl_enable_sha1cert = true;
         msgs_ssl_keyfile         = "./server.key";
@@ -197,4 +197,4 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#endif /* MSG_SERVER_H */
+#endif /* ____MSG_SERVER_H____ */

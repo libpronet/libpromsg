@@ -16,8 +16,8 @@
  * This file is part of LibProMsg (https://github.com/libpronet/libpromsg)
  */
 
-#if !defined(MSG_CLIENT_H)
-#define MSG_CLIENT_H
+#if !defined(____MSG_CLIENT_H____)
+#define ____MSG_CLIENT_H____
 
 #include "pronet/pro_memory_pool.h"
 #include "pronet/pro_ref_count.h"
@@ -186,4 +186,4 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#endif /* MSG_CLIENT_H */
+#endif /* ____MSG_CLIENT_H____ */
