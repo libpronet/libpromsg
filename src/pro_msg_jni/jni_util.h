@@ -19,7 +19,7 @@
 #if !defined(JNI_UTIL_H)
 #define JNI_UTIL_H
 
-#include "pro/pro_a.h"
+#include "pronet/pro_a.h"
 #include <jni.h>
 
 #if defined(__cplusplus)

@@ -19,10 +19,10 @@
 #include "msg_server_jni.h"
 #include "jni_util.h"
 #include "msg_server.h"
-#include "pro/pro_thread_mutex.h"
-#include "pro/pro_z.h"
-#include "pro/rtp_base.h"
-#include "pro/rtp_msg.h"
+#include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_z.h"
+#include "pronet/rtp_base.h"
+#include "pronet/rtp_msg.h"
 #include <cassert>
 #include <jni.h>
 

@@ -19,9 +19,9 @@
 #include "com_pro_msg_ProMsgJni.h"
 #include "msg_client_jni.h"
 #include "msg_server_jni.h"
-#include "pro/pro_net.h"
-#include "pro/pro_thread_mutex.h"
-#include "pro/pro_z.h"
+#include "pronet/pro_net.h"
+#include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_z.h"
 #include <cassert>
 #include <jni.h>
 

@@ -17,8 +17,8 @@
  */
 
 #include "jni_util.h"
-#include "pro/pro_a.h"
-#include "pro/pro_z.h"
+#include "pronet/pro_a.h"
+#include "pronet/pro_z.h"
 
 #if !defined(WIN32) && !defined(_WIN32_WCE)
 #include <pthread.h>

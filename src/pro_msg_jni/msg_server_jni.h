@@ -20,8 +20,8 @@
 #define MSG_SERVER_JNI_H
 
 #include "msg_server.h"
-#include "pro/rtp_base.h"
-#include "pro/rtp_msg.h"
+#include "pronet/rtp_base.h"
+#include "pronet/rtp_msg.h"
 #include <jni.h>
 
 /////////////////////////////////////////////////////////////////////////////
