@@ -138,10 +138,10 @@ JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_msgClientReconnect
 /*
  * Class:     com_pro_msg_ProMsgJni
  * Method:    msgServerCreate
- * Signature: (Lcom/pro/msg/ProMsgJni/MsgServerListener;Ljava/lang/String;S)J
+ * Signature: (Lcom/pro/msg/ProMsgJni/MsgServerListener;Ljava/lang/String;SI)J
  */
 JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgServerCreate
-  (JNIEnv *, jclass, jobject, jstring, jshort);
+  (JNIEnv *, jclass, jobject, jstring, jshort, jint);
 
 /*
  * Class:     com_pro_msg_ProMsgJni

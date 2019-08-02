@@ -104,9 +104,10 @@ public:
     static CMsgServer* CreateInstance();
 
     bool Init(
-        IProReactor* reactor,
-        const char*  configFileName,
-        RTP_MM_TYPE  mmType /* = 0 */
+        IProReactor*   reactor,
+        const char*    configFileName,
+        RTP_MM_TYPE    mmType,        /* = 0 */
+        unsigned short serviceHubPort /* = 0 */
         );
 
     void Fini();

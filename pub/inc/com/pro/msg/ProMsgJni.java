@@ -160,7 +160,8 @@ public class ProMsgJni
     public static native long msgServerCreate(
         MsgServerListener listener,
         String            configFileName,
-        short             mmType /* = 0, 11 ~ 20 */
+        short             mmType,        /* = 0, 11 ~ 20 */
+        int               serviceHubPort /* = 0, 1 ~ 65535 */
         );
 
     public static native void msgServerDelete(long server);

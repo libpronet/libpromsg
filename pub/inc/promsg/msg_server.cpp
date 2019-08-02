@@ -225,9 +225,10 @@ CMsgServer::~CMsgServer()
 }
 
 bool
-CMsgServer::Init(IProReactor* reactor,
-                 const char*  configFileName,
-                 RTP_MM_TYPE  mmType) /* = 0 */
+CMsgServer::Init(IProReactor*   reactor,
+                 const char*    configFileName,
+                 RTP_MM_TYPE    mmType,         /* = 0 */
+                 unsigned short serviceHubPort) /* = 0 */
 {
     assert(reactor != NULL);
     assert(configFileName != NULL);
@@ -266,7 +267,11 @@ CMsgServer::Init(IProReactor* reactor,
      */
     if (mmType >= RTP_MMT_MSG_MIN && mmType <= RTP_MMT_MSG_MAX)
     {
-        configInfo.msgs_mm_type = mmType;
+        configInfo.msgs_mm_type  = mmType;
+    }
+    if (serviceHubPort > 0)
+    {
+        configInfo.msgs_hub_port = serviceHubPort;
     }
 
     PRO_SSL_SERVER_CONFIG* sslConfig = NULL;

@@ -984,7 +984,8 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
                                            jclass  thiz,
                                            jobject listener,
                                            jstring configFileName,
-                                           jshort  mmType) /* = 0, 11 ~ 20 */
+                                           jshort  mmType,         /* = 0, 11 ~ 20 */
+                                           jint    serviceHubPort) /* = 0, 1 ~ 65535 */
 {
     assert(listener != NULL);
     assert(configFileName != NULL);
@@ -993,8 +994,9 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         return (0);
     }
 
-    char        cppConfigFileName[1024] = "";
-    RTP_MM_TYPE cppMmType               = 0;
+    char           cppConfigFileName[1024] = "";
+    RTP_MM_TYPE    cppMmType               = 0;
+    unsigned short cppServiceHubPort       = 0;
 
     cppConfigFileName[sizeof(cppConfigFileName) - 1] = '\0';
 
@@ -1010,6 +1012,11 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
     if (mmType >= (jshort)RTP_MMT_MSG_MIN && mmType <= (jshort)RTP_MMT_MSG_MAX)
     {
         cppMmType = (RTP_MM_TYPE)mmType;
+    }
+
+    if (serviceHubPort > 0 && serviceHubPort <= 65535)
+    {
+        cppServiceHubPort = (unsigned short)serviceHubPort;
     }
 
     CMsgServerJni* server = NULL;
@@ -1029,7 +1036,7 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
             return (0);
         }
 
-        if (!server->Init(g_s_reactor, cppConfigFileName, cppMmType))
+        if (!server->Init(g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
         {
             server->Release();
 
