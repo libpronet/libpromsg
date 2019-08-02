@@ -1,5 +1,8 @@
 #!/bin/sh
 
+rm -rf ./pro_msg_jni/.deps
+rm -rf ./cfg/.deps
+
 if [ "${JAVA_HOME}" = "" ]; then
 
 echo " ERROR! JAVA_HOME is not set. "
