@@ -679,6 +679,7 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         }
     }
 
+    if (1)
     {{{
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
@@ -716,8 +717,6 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    const CProStlString msg((char*)buf, size);
-
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -732,7 +731,10 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
         }
     }
 
+    if (0)
     {{{
+        const CProStlString msg((char*)buf, size);
+
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
@@ -779,6 +781,7 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
         }
     }
 
+    if (1)
     {{{
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
