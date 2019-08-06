@@ -118,7 +118,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_MSG_JNI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +136,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_MSG_JNI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -156,7 +156,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_MSG_JNI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -178,7 +178,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_MSG_JNI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../../libpronet/pub/inc;$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
