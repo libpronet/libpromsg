@@ -116,6 +116,15 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    RTP_MM_TYPE GetMmType() const;
+
+    unsigned short GetServicePort() const;
+
+    const char* GetSslSuite(
+        const RTP_MSG_USER& user,
+        char                suiteName[64]
+        ) const;
+
     unsigned long GetUserCount() const;
 
     void KickoutUser(const RTP_MSG_USER& user);
@@ -141,6 +150,8 @@ public:
     void SetOutputRedline(unsigned long redlineBytes);
 
     unsigned long GetOutputRedline() const;
+
+    unsigned long GetSendingBytes(const RTP_MSG_USER& user) const;
 
 protected:
 

@@ -1,23 +1,15 @@
-prolibdir  = ${prefix}/libpromsg/lib
-proinc1dir = ${prefix}/libpromsg/include/promsg
-proinc2dir = ${prefix}/libpromsg/include/com/pro/msg
+prolibdir = ${prefix}/libpromsg/lib
+proincdir = ${prefix}/libpromsg/include/com/pro/msg
 
 #############################################################################
 
 prolib_PROGRAMS = libpro_msg_jni.so
 
-proinc1_HEADERS = ../../../../src/pro_msg_jni/msg_client.cpp \
-                  ../../../../src/pro_msg_jni/msg_client.h   \
-                  ../../../../src/pro_msg_jni/msg_server.cpp \
-                  ../../../../src/pro_msg_jni/msg_server.h
-
-proinc2_HEADERS = ../../../../src/pro_msg_jni/com/pro/msg/ProMsgJni.java
+proinc_HEADERS = ../../../../src/pro_msg_jni/com/pro/msg/ProMsgJni.java
 
 libpro_msg_jni_so_SOURCES = ../../../../src/pro_msg_jni/com_pro_msg_ProMsgJni.cpp \
                             ../../../../src/pro_msg_jni/jni_util.cpp              \
-                            ../../../../src/pro_msg_jni/msg_client.cpp            \
                             ../../../../src/pro_msg_jni/msg_client_jni.cpp        \
-                            ../../../../src/pro_msg_jni/msg_server.cpp            \
                             ../../../../src/pro_msg_jni/msg_server_jni.cpp
 
 libpro_msg_jni_so_CPPFLAGS = -I/usr/local/libpronet/include \
@@ -32,7 +24,8 @@ libpro_msg_jni_so_LDFLAGS = -shared -Wl,-soname,libpro_msg_jni.so \
                             -Wl,--no-undefined
 libpro_msg_jni_so_LDADD   =
 
-LIBS = -L/usr/local/libpronet/lib \
+LIBS = ../pro_msg/libpro_msg.a    \
+       -L/usr/local/libpronet/lib \
        -lpro_rtp                  \
        -lpro_net                  \
        -lpro_util                 \

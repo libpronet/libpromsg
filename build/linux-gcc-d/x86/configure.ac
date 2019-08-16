@@ -21,6 +21,7 @@ AC_PROG_RANLIB
 # Checks for library functions.
 
 AC_CONFIG_FILES([Makefile
+                 pro_msg/Makefile
                  pro_msg_jni/Makefile
                  cfg/Makefile])
 AC_OUTPUT

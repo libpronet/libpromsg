@@ -104,15 +104,7 @@ SOURCE=..\..\..\src\pro_msg_jni\jni_util.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro_msg_jni\msg_client.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\pro_msg_jni\msg_client_jni.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro_msg_jni\msg_server.cpp
 # End Source File
 # Begin Source File
 
@@ -132,15 +124,7 @@ SOURCE=..\..\..\src\pro_msg_jni\jni_util.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro_msg_jni\msg_client.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\pro_msg_jni\msg_client_jni.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro_msg_jni\msg_server.h
 # End Source File
 # Begin Source File
 

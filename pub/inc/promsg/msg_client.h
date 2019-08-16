@@ -109,6 +109,8 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    RTP_MM_TYPE GetMmType() const;
+
     void GetUser(RTP_MSG_USER& user) const;
 
     const char* GetSslSuite(char suiteName[64]) const;
@@ -142,6 +144,8 @@ public:
     void SetOutputRedline(unsigned long redlineBytes);
 
     unsigned long GetOutputRedline() const;
+
+    unsigned long GetSendingBytes() const;
 
     bool Reconnect();
 

@@ -19,7 +19,7 @@
 package com.pro.msg;
 
 /*
- * please refer to "libpronet/pub/inc/pro/rtp_msg.h"
+ * please refer to "libpronet/pub/inc/pronet/rtp_msg.h"
  */
 public class ProMsgJni
 {
@@ -94,7 +94,10 @@ public class ProMsgJni
             );
     }
 
-    public static native void getVersion(
+    /*
+     * this file's version is [1.2.0]
+     */
+    public static native void getCoreVersion(
         short[] major_1, /* = null */
         short[] minor_1, /* = null */
         short[] patch_1  /* = null */
@@ -118,6 +121,8 @@ public class ProMsgJni
         );
 
     public static native void msgClientDelete(long client);
+
+    public static native short msgClientGetMmType(long client);
 
     public static native PRO_MSG_USER msgClientGetUser(long client);
 
@@ -153,6 +158,8 @@ public class ProMsgJni
 
     public static native long msgClientGetOutputRedline(long client);
 
+    public static native long msgClientGetSendingBytes(long client);
+
     public static native boolean msgClientReconnect(long client);
 
     /*---------------------------------------------------------------------*/
@@ -165,6 +172,15 @@ public class ProMsgJni
         );
 
     public static native void msgServerDelete(long server);
+
+    public static native short msgServerGetMmType(long server);
+
+    public static native int msgServerGetServicePort(long server);
+
+    public static native String msgServerGetSslSuite(
+        long         server,
+        PRO_MSG_USER user
+        );
 
     public static native long msgServerGetUserCount(long server);
 
@@ -194,6 +210,11 @@ public class ProMsgJni
         );
 
     public static native long msgServerGetOutputRedline(long server);
+
+    public static native long msgServerGetSendingBytes(
+        long         server,
+        PRO_MSG_USER user
+    );
 
     static
     {

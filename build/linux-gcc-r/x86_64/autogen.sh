@@ -1,5 +1,6 @@
 #!/bin/sh
 
+rm -rf ./pro_msg/.deps
 rm -rf ./pro_msg_jni/.deps
 rm -rf ./cfg/.deps
 
@@ -10,6 +11,8 @@ echo " ERROR! JAVA_HOME is not set. "
 else
 
 echo " JAVA_HOME: ${JAVA_HOME} "
+
+fi
 
 #
 # configure.ac ---> aclocal.m4
@@ -39,5 +42,3 @@ CXXFLAGS="-O2 -Wall -march=nocona -m64" \
 LDFLAGS="" $@
 
 rm -f ./configure
-
-fi

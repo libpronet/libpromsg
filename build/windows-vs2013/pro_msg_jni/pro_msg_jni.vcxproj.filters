@@ -24,13 +24,7 @@
     <ClCompile Include="..\..\..\src\pro_msg_jni\jni_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\pro_msg_jni\msg_client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\pro_msg_jni\msg_client_jni.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\pro_msg_jni\msg_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\pro_msg_jni\msg_server_jni.cpp">
@@ -44,13 +38,7 @@
     <ClInclude Include="..\..\..\src\pro_msg_jni\jni_util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\pro_msg_jni\msg_client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\pro_msg_jni\msg_client_jni.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\pro_msg_jni\msg_server.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\pro_msg_jni\msg_server_jni.h">

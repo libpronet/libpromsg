@@ -1,2 +1,3 @@
-SUBDIRS = pro_msg_jni \
+SUBDIRS = pro_msg     \
+          pro_msg_jni \
           cfg

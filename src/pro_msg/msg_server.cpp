@@ -375,7 +375,7 @@ CMsgServer::Init(IProReactor*   reactor,
             goto EXIT;
         }
 
-        msgServer->SetOutputRedlineToUser(configInfo.msgs_redline_bytes);
+        msgServer->SetOutputRedlineToUsr(configInfo.msgs_redline_bytes);
 
         m_reactor       = reactor;
         m_msgConfigInfo = configInfo;
@@ -434,6 +434,52 @@ CMsgServer::Release()
     const unsigned long refCount = CProRefCount::Release();
 
     return (refCount);
+}
+
+RTP_MM_TYPE
+CMsgServer::GetMmType() const
+{
+    RTP_MM_TYPE mmType = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        mmType = m_msgConfigInfo.msgs_mm_type;
+    }
+
+    return (mmType);
+}
+
+unsigned short
+CMsgServer::GetServicePort() const
+{
+    unsigned short servicePort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        servicePort = m_msgConfigInfo.msgs_hub_port;
+    }
+
+    return (servicePort);
+}
+
+const char*
+CMsgServer::GetSslSuite(const RTP_MSG_USER& user,
+                        char                suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgServer != NULL)
+        {
+            m_msgServer->GetSslSuite(&user, suiteName);
+        }
+    }
+
+    return (suiteName);
 }
 
 unsigned long
@@ -521,8 +567,8 @@ CMsgServer::SetOutputRedline(unsigned long redlineBytes)
             return;
         }
 
-        m_msgServer->SetOutputRedlineToUser(redlineBytes);
-        m_msgConfigInfo.msgs_redline_bytes = m_msgServer->GetOutputRedlineToUser();
+        m_msgServer->SetOutputRedlineToUsr(redlineBytes);
+        m_msgConfigInfo.msgs_redline_bytes = m_msgServer->GetOutputRedlineToUsr();
     }
 }
 
@@ -538,6 +584,23 @@ CMsgServer::GetOutputRedline() const
     }
 
     return (redlineBytes);
+}
+
+unsigned long
+CMsgServer::GetSendingBytes(const RTP_MSG_USER& user) const
+{
+    unsigned long sendingBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgServer != NULL)
+        {
+            sendingBytes = m_msgServer->GetSendingBytes(&user);
+        }
+    }
+
+    return (sendingBytes);
 }
 
 bool

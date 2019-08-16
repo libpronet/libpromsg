@@ -444,6 +444,20 @@ CMsgClient::Release()
     return (refCount);
 }
 
+RTP_MM_TYPE
+CMsgClient::GetMmType() const
+{
+    RTP_MM_TYPE mmType = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        mmType = m_msgConfigInfo.msgc_mm_type;
+    }
+
+    return (mmType);
+}
+
 void
 CMsgClient::GetUser(RTP_MSG_USER& user) const
 {
@@ -606,6 +620,23 @@ CMsgClient::GetOutputRedline() const
     }
 
     return (redlineBytes);
+}
+
+unsigned long
+CMsgClient::GetSendingBytes() const
+{
+    unsigned long sendingBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgClient != NULL)
+        {
+            sendingBytes = m_msgClient->GetSendingBytes();
+        }
+    }
+
+    return (sendingBytes);
 }
 
 bool
