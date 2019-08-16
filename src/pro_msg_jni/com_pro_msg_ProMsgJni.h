@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     com_pro_msg_ProMsgJni
- * Method:    getVersion
+ * Method:    getCoreVersion
  * Signature: ([S[S[S)V
  */
-JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_getVersion
+JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_getCoreVersion
   (JNIEnv *, jclass, jshortArray, jshortArray, jshortArray);
 
 /*
@@ -45,6 +45,14 @@ JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgClientCreate
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_msgClientDelete
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgClientGetMmType
+ * Signature: (J)S
+ */
+JNIEXPORT jshort JNICALL Java_com_pro_msg_ProMsgJni_msgClientGetMmType
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -129,6 +137,14 @@ JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline
 
 /*
  * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgClientGetSendingBytes
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgClientGetSendingBytes
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
  * Method:    msgClientReconnect
  * Signature: (J)Z
  */
@@ -150,6 +166,30 @@ JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgServerCreate
  */
 JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_msgServerDelete
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgServerGetMmType
+ * Signature: (J)S
+ */
+JNIEXPORT jshort JNICALL Java_com_pro_msg_ProMsgJni_msgServerGetMmType
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgServerGetServicePort
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_pro_msg_ProMsgJni_msgServerGetServicePort
+  (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgServerGetSslSuite
+ * Signature: (JLcom/pro/msg/ProMsgJni/PRO_MSG_USER;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_com_pro_msg_ProMsgJni_msgServerGetSslSuite
+  (JNIEnv *, jclass, jlong, jobject);
 
 /*
  * Class:     com_pro_msg_ProMsgJni
@@ -198,6 +238,14 @@ JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline
  */
 JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline
   (JNIEnv *, jclass, jlong);
+
+/*
+ * Class:     com_pro_msg_ProMsgJni
+ * Method:    msgServerGetSendingBytes
+ * Signature: (JLcom/pro/msg/ProMsgJni/PRO_MSG_USER;)J
+ */
+JNIEXPORT jlong JNICALL Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes
+  (JNIEnv *, jclass, jlong, jobject);
 
 #ifdef __cplusplus
 }

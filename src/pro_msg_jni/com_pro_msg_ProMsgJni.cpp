@@ -19,8 +19,8 @@
 #include "com_pro_msg_ProMsgJni.h"
 #include "msg_client_jni.h"
 #include "msg_server_jni.h"
-#include "pronet/pro_net.h"
 #include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_version.h"
 #include "pronet/pro_z.h"
 #include <cassert>
 #include <jni.h>
@@ -176,23 +176,18 @@ MSG_USER_cpp2java_i(JNIEnv*             env,
 JNIEXPORT
 void
 JNICALL
-Java_com_pro_msg_ProMsgJni_getVersion(JNIEnv*     env,
-                                      jclass      thiz,
-                                      jshortArray major_1, /* = null */
-                                      jshortArray minor_1, /* = null */
-                                      jshortArray patch_1) /* = null */
+Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
+                                          jclass      thiz,
+                                          jshortArray major_1, /* = null */
+                                          jshortArray minor_1, /* = null */
+                                          jshortArray patch_1) /* = null */
 {
-    unsigned char cppMajor = 0;
-    unsigned char cppMinor = 0;
-    unsigned char cppPatch = 0;
-    ProRtpVersion(&cppMajor, &cppMinor, &cppPatch);
-
     if (major_1 != NULL && env->GetArrayLength(major_1) > 0)
     {
         jshort* const p = env->GetShortArrayElements(major_1, NULL);
         if (p != NULL)
         {
-            *p = cppMajor;
+            *p = PRO_VER_MAJOR;
             env->ReleaseShortArrayElements(major_1, p, 0);
         }
     }
@@ -202,7 +197,7 @@ Java_com_pro_msg_ProMsgJni_getVersion(JNIEnv*     env,
         jshort* const p = env->GetShortArrayElements(minor_1, NULL);
         if (p != NULL)
         {
-            *p = cppMinor;
+            *p = PRO_VER_MINOR;
             env->ReleaseShortArrayElements(minor_1, p, 0);
         }
     }
@@ -212,7 +207,7 @@ Java_com_pro_msg_ProMsgJni_getVersion(JNIEnv*     env,
         jshort* const p = env->GetShortArrayElements(patch_1, NULL);
         if (p != NULL)
         {
-            *p = cppPatch;
+            *p = PRO_VER_PATCH;
             env->ReleaseShortArrayElements(patch_1, p, 0);
         }
     }
@@ -490,18 +485,53 @@ Java_com_pro_msg_ProMsgJni_msgClientDelete(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_clients.find(client);
-        if (itr == g_s_clients.end())
+        if (g_s_clients.find(client) == g_s_clients.end())
         {
             return;
         }
 
-        g_s_clients.erase(itr);
+        g_s_clients.erase(client);
     }
 
     CMsgClientJni* const p = (CMsgClientJni*)client;
     p->Fini();
     p->Release();
+}
+
+JNIEXPORT
+jshort
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgClientGetMmType(JNIEnv* evn,
+                                              jclass  thiz,
+                                              jlong   client)
+{
+    assert(client != 0);
+    if (client == 0)
+    {
+        return (0);
+    }
+
+    CMsgClientJni* client2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_clients.find(client) != g_s_clients.end())
+        {
+            client2 = (CMsgClientJni*)client;
+            client2->AddRef();
+        }
+    }
+
+    jshort mmType = 0;
+
+    if (client2 != NULL)
+    {
+        mmType = client2->GetMmType();
+        client2->Release();
+    }
+
+    return (mmType);
 }
 
 JNIEXPORT
@@ -522,10 +552,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -562,10 +591,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -602,10 +630,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -642,10 +669,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -679,10 +705,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -719,10 +744,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -808,13 +832,12 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
             return (JNI_FALSE);
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr == g_s_clients.end())
+        if (g_s_clients.find(client) == g_s_clients.end())
         {
             return (JNI_FALSE);
         }
 
-        client2 = (CMsgClientJni*)*itr;
+        client2 = (CMsgClientJni*)client;
         client2->AddRef();
     }
 
@@ -885,13 +908,12 @@ Java_com_pro_msg_ProMsgJni_msgClientSetOutputRedline(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr == g_s_clients.end())
+        if (g_s_clients.find(client) == g_s_clients.end())
         {
             return;
         }
 
-        client2 = (CMsgClientJni*)*itr;
+        client2 = (CMsgClientJni*)client;
         client2->AddRef();
     }
 
@@ -917,10 +939,9 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr != g_s_clients.end())
+        if (g_s_clients.find(client) != g_s_clients.end())
         {
-            client2 = (CMsgClientJni*)*itr;
+            client2 = (CMsgClientJni*)client;
             client2->AddRef();
         }
     }
@@ -934,6 +955,42 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
     }
 
     return (redlineBytes);
+}
+
+JNIEXPORT
+jlong
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgClientGetSendingBytes(JNIEnv* env,
+                                                    jclass  thiz,
+                                                    jlong   client)
+{
+    assert(client != 0);
+    if (client == 0)
+    {
+        return (0);
+    }
+
+    CMsgClientJni* client2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_clients.find(client) != g_s_clients.end())
+        {
+            client2 = (CMsgClientJni*)client;
+            client2->AddRef();
+        }
+    }
+
+    jlong sendingBytes = 0;
+
+    if (client2 != NULL)
+    {
+        sendingBytes = client2->GetSendingBytes();
+        client2->Release();
+    }
+
+    return (sendingBytes);
 }
 
 JNIEXPORT
@@ -959,13 +1016,12 @@ Java_com_pro_msg_ProMsgJni_msgClientReconnect(JNIEnv* env,
             return (JNI_FALSE);
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_clients.find(client);
-        if (itr == g_s_clients.end())
+        if (g_s_clients.find(client) == g_s_clients.end())
         {
             return (JNI_FALSE);
         }
 
-        client2 = (CMsgClientJni*)*itr;
+        client2 = (CMsgClientJni*)client;
         client2->AddRef();
     }
 
@@ -1069,18 +1125,89 @@ Java_com_pro_msg_ProMsgJni_msgServerDelete(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::iterator const itr = g_s_servers.find(server);
-        if (itr == g_s_servers.end())
+        if (g_s_servers.find(server) == g_s_servers.end())
         {
             return;
         }
 
-        g_s_servers.erase(itr);
+        g_s_servers.erase(server);
     }
 
     CMsgServerJni* const p = (CMsgServerJni*)server;
     p->Fini();
     p->Release();
+}
+
+JNIEXPORT
+jshort
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgServerGetMmType(JNIEnv* evn,
+                                              jclass  thiz,
+                                              jlong   server)
+{
+    assert(server != 0);
+    if (server == 0)
+    {
+        return (0);
+    }
+
+    CMsgServerJni* server2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_servers.find(server) != g_s_servers.end())
+        {
+            server2 = (CMsgServerJni*)server;
+            server2->AddRef();
+        }
+    }
+
+    jshort mmType = 0;
+
+    if (server2 != NULL)
+    {
+        mmType = server2->GetMmType();
+        server2->Release();
+    }
+
+    return (mmType);
+}
+
+JNIEXPORT
+jint
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgServerGetServicePort(JNIEnv* env,
+                                                   jclass  thiz,
+                                                   jlong   server)
+{
+    assert(server != 0);
+    if (server == 0)
+    {
+        return (0);
+    }
+
+    CMsgServerJni* server2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_servers.find(server) != g_s_servers.end())
+        {
+            server2 = (CMsgServerJni*)server;
+            server2->AddRef();
+        }
+    }
+
+    jint servicePort = 0;
+
+    if (server2 != NULL)
+    {
+        servicePort = server2->GetServicePort();
+        server2->Release();
+    }
+
+    return (servicePort);
 }
 
 JNIEXPORT
@@ -1101,10 +1228,9 @@ Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
-        if (itr != g_s_servers.end())
+        if (g_s_servers.find(server) != g_s_servers.end())
         {
-            server2 = (CMsgServerJni*)*itr;
+            server2 = (CMsgServerJni*)server;
             server2->AddRef();
         }
     }
@@ -1134,6 +1260,9 @@ Java_com_pro_msg_ProMsgJni_msgServerKickoutUser(JNIEnv* env,
         return;
     }
 
+    RTP_MSG_USER cppUser;
+    MSG_USER_java2cpp_i(env, user, cppUser);
+
     CMsgServerJni* server2 = NULL;
 
     {
@@ -1144,18 +1273,14 @@ Java_com_pro_msg_ProMsgJni_msgServerKickoutUser(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
-        if (itr == g_s_servers.end())
+        if (g_s_servers.find(server) == g_s_servers.end())
         {
             return;
         }
 
-        server2 = (CMsgServerJni*)*itr;
+        server2 = (CMsgServerJni*)server;
         server2->AddRef();
     }
-
-    RTP_MSG_USER cppUser;
-    MSG_USER_java2cpp_i(env, user, cppUser);
 
     server2->KickoutUser(cppUser);
     server2->Release();
@@ -1231,13 +1356,12 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
             return (JNI_FALSE);
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
-        if (itr == g_s_servers.end())
+        if (g_s_servers.find(server) == g_s_servers.end())
         {
             return (JNI_FALSE);
         }
 
-        server2 = (CMsgServerJni*)*itr;
+        server2 = (CMsgServerJni*)server;
         server2->AddRef();
     }
 
@@ -1308,13 +1432,12 @@ Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline(JNIEnv* env,
             return;
         }
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
-        if (itr == g_s_servers.end())
+        if (g_s_servers.find(server) == g_s_servers.end())
         {
             return;
         }
 
-        server2 = (CMsgServerJni*)*itr;
+        server2 = (CMsgServerJni*)server;
         server2->AddRef();
     }
 
@@ -1340,10 +1463,9 @@ Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlSet<PRO_INT64>::const_iterator const itr = g_s_servers.find(server);
-        if (itr != g_s_servers.end())
+        if (g_s_servers.find(server) != g_s_servers.end())
         {
-            server2 = (CMsgServerJni*)*itr;
+            server2 = (CMsgServerJni*)server;
             server2->AddRef();
         }
     }
@@ -1357,6 +1479,46 @@ Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
     }
 
     return (redlineBytes);
+}
+
+JNIEXPORT
+jlong
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes(JNIEnv* env,
+                                                    jclass  thiz,
+                                                    jlong   server,
+                                                    jobject user)
+{
+    assert(server != 0);
+    if (server == 0 || user == NULL)
+    {
+        return (0);
+    }
+
+    RTP_MSG_USER cppUser;
+    MSG_USER_java2cpp_i(env, user, cppUser);
+
+    CMsgServerJni* server2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_servers.find(server) != g_s_servers.end())
+        {
+            server2 = (CMsgServerJni*)server;
+            server2->AddRef();
+        }
+    }
+
+    jlong sendingBytes = 0;
+
+    if (server2 != NULL)
+    {
+        sendingBytes = server2->GetSendingBytes(cppUser);
+        server2->Release();
+    }
+
+    return (sendingBytes);
 }
 
 /////////////////////////////////////////////////////////////////////////////
