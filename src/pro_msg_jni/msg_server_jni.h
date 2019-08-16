@@ -19,9 +19,9 @@
 #if !defined(MSG_SERVER_JNI_H)
 #define MSG_SERVER_JNI_H
 
-#include "msg_server.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
+#include "../pro_msg/msg_server.h"
 #include <jni.h>
 
 /////////////////////////////////////////////////////////////////////////////
