@@ -716,8 +716,7 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         msgClient->GetSslSuite(suiteName);
 
         printf(
-            "\n"
-            " CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
+            "\n CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
             " server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
@@ -818,8 +817,7 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
         msgClient->GetUser(&myUser);
 
         printf(
-            "\n"
-            " CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            "\n CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             (unsigned int)myUser.classId,
