@@ -13,8 +13,8 @@ libpro_msg_jni_so_SOURCES = ../../../../src/pro_msg_jni/com_pro_msg_ProMsgJni.cp
                             ../../../../src/pro_msg_jni/msg_server_jni.cpp
 
 libpro_msg_jni_so_CPPFLAGS = -I/usr/local/libpronet/include \
-                             -I${JAVA_HOME}/include         \
-                             -I${JAVA_HOME}/include/linux
+                             -I"${JAVA_HOME}/include"       \
+                             -I"${JAVA_HOME}/include/linux"
 
 libpro_msg_jni_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_msg_jni_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden

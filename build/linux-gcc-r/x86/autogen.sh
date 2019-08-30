@@ -4,13 +4,13 @@ rm -rf ./pro_msg/.deps
 rm -rf ./pro_msg_jni/.deps
 rm -rf ./cfg/.deps
 
-if [ "${JAVA_HOME}" = "" ]; then
+if [ -z "${JAVA_HOME}" ]; then
 
-echo " ERROR! JAVA_HOME is not set. "
+  echo " ERROR! JAVA_HOME is not set. "
 
 else
 
-echo " JAVA_HOME: ${JAVA_HOME} "
+  echo " JAVA_HOME: ${JAVA_HOME} "
 
 fi
 
