@@ -36,10 +36,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pro_msg\msg_client.cpp" />
+    <ClCompile Include="..\..\..\src\pro_msg\msg_client2.cpp" />
     <ClCompile Include="..\..\..\src\pro_msg\msg_server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\pro_msg\msg_client.h" />
+    <ClInclude Include="..\..\..\src\pro_msg\msg_client2.h" />
     <ClInclude Include="..\..\..\src\pro_msg\msg_server.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

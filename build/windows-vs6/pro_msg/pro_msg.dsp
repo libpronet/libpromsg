@@ -147,6 +147,10 @@ SOURCE=..\..\..\src\pro_msg\msg_client.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\pro_msg\msg_client2.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\pro_msg\msg_server.cpp
 # End Source File
 # End Group
@@ -156,6 +160,10 @@ SOURCE=..\..\..\src\pro_msg\msg_server.cpp
 # Begin Source File
 
 SOURCE=..\..\..\src\pro_msg\msg_client.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro_msg\msg_client2.h
 # End Source File
 # Begin Source File
 
