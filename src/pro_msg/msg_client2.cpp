@@ -53,6 +53,8 @@ CMsgClient2::Init(IMsgClientObserver* observer,
                   RTP_MM_TYPE         mmType,     /* = 0 */
                   const char*         serverIp,   /* = NULL */
                   unsigned short      serverPort, /* = 0 */
+                  const RTP_MSG_USER* user,       /* = NULL */
+                  const char*         password,   /* = NULL */
                   const char*         localIp)    /* = NULL */
 {
     assert(observer != NULL);
@@ -71,7 +73,7 @@ CMsgClient2::Init(IMsgClientObserver* observer,
         }
 
         if (!CMsgClient::Init(
-            reactor, configFileName, mmType, serverIp, serverPort, NULL, NULL, localIp))
+            reactor, configFileName, mmType, serverIp, serverPort, user, password, localIp))
         {
             return (false);
         }

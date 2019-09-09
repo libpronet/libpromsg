@@ -78,6 +78,8 @@ public:
         RTP_MM_TYPE         mmType,     /* = 0 */
         const char*         serverIp,   /* = NULL */
         unsigned short      serverPort, /* = 0 */
+        const RTP_MSG_USER* user,       /* = NULL */
+        const char*         password,   /* = NULL */
         const char*         localIp     /* = NULL */
         );
 
