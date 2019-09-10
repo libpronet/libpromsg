@@ -30,6 +30,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CMsgReconnector;
+
 struct MSG_CLIENT_CONFIG_INFO
 {
     MSG_CLIENT_CONFIG_INFO()
@@ -40,6 +42,7 @@ struct MSG_CLIENT_CONFIG_INFO
         msgc_password            = "test";
         msgc_local_ip            = "0.0.0.0";
         msgc_handshake_timeout   = 20;
+        msgc_reconnect_interval  = 5;
         msgc_redline_bytes       = 1024000;
 
         msgc_enable_ssl          = false;
@@ -71,6 +74,7 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_password;
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
+    unsigned int                 msgc_reconnect_interval;
     unsigned int                 msgc_redline_bytes;
 
     bool                         msgc_enable_ssl;
@@ -88,6 +92,8 @@ struct MSG_CLIENT_CONFIG_INFO
 
 class CMsgClient : public IRtpMsgClientObserver, public CProRefCount
 {
+    friend class CMsgReconnector;
+
 public:
 
     static CMsgClient* CreateInstance();
@@ -182,7 +188,12 @@ protected:
     MSG_CLIENT_CONFIG_INFO           m_msgConfigInfo;
     PRO_SSL_CLIENT_CONFIG*           m_sslConfig;
     IRtpMsgClient*                   m_msgClient;
+    CMsgReconnector*                 m_reconnector;
     mutable CProRecursiveThreadMutex m_lock;
+
+private:
+
+    void Reconnect_i();
 
     DECLARE_SGI_POOL(0);
 };

@@ -151,6 +151,10 @@ SOURCE=..\..\..\src\pro_msg\msg_client2.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\pro_msg\msg_reconnector.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\pro_msg\msg_server.cpp
 # End Source File
 # End Group
@@ -164,6 +168,10 @@ SOURCE=..\..\..\src\pro_msg\msg_client.h
 # Begin Source File
 
 SOURCE=..\..\..\src\pro_msg\msg_client2.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro_msg\msg_reconnector.h
 # End Source File
 # Begin Source File
 

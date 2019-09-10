@@ -17,6 +17,7 @@
  */
 
 #include "msg_client.h"
+#include "msg_reconnector.h"
 #include "pronet/pro_bsd_wrapper.h"
 #include "pronet/pro_config_file.h"
 #include "pronet/pro_memory_pool.h"
@@ -107,6 +108,14 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.msgc_handshake_timeout = value;
             }
         }
+        else if (stricmp(configName.c_str(), "msgc_reconnect_interval") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgc_reconnect_interval = value;
+            }
+        }
         else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
         {
             const int value = atoi(configValue.c_str());
@@ -186,9 +195,10 @@ CMsgClient::CreateInstance()
 
 CMsgClient::CMsgClient()
 {
-    m_reactor   = NULL;
-    m_sslConfig = NULL;
-    m_msgClient = NULL;
+    m_reactor     = NULL;
+    m_sslConfig   = NULL;
+    m_msgClient   = NULL;
+    m_reconnector = NULL;
 }
 
 CMsgClient::~CMsgClient()
@@ -282,8 +292,9 @@ CMsgClient::Init(IProReactor*        reactor,
         configInfo.msgc_server_ip = serverIpByDNS;
     }
 
-    PRO_SSL_CLIENT_CONFIG* sslConfig = NULL;
-    IRtpMsgClient*         msgClient = NULL;
+    PRO_SSL_CLIENT_CONFIG* sslConfig   = NULL;
+    IRtpMsgClient*         msgClient   = NULL;
+    CMsgReconnector*       reconnector = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -291,7 +302,9 @@ CMsgClient::Init(IProReactor*        reactor,
         assert(m_reactor == NULL);
         assert(m_sslConfig == NULL);
         assert(m_msgClient == NULL);
-        if (m_reactor != NULL || m_sslConfig != NULL || m_msgClient != NULL)
+        assert(m_reconnector == NULL);
+        if (m_reactor != NULL || m_sslConfig != NULL || m_msgClient != NULL ||
+            m_reconnector != NULL)
         {
             return (false);
         }
@@ -385,15 +398,28 @@ CMsgClient::Init(IProReactor*        reactor,
 
         msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
 
+        reconnector = CMsgReconnector::CreateInstance();
+        if (reconnector == NULL || !reconnector->Init(this, reactor))
+        {
+            goto EXIT;
+        }
+
         m_reactor       = reactor;
         m_msgConfigInfo = configInfo;
         m_sslConfig     = sslConfig;
         m_msgClient     = msgClient;
+        m_reconnector   = reconnector;
     }
 
     return (true);
 
 EXIT:
+
+    if (reconnector != NULL)
+    {
+        reconnector->Fini();
+        reconnector->Release();
+    }
 
     DeleteRtpMsgClient(msgClient);
     ProSslClientConfig_Delete(sslConfig);
@@ -404,8 +430,9 @@ EXIT:
 void
 CMsgClient::Fini()
 {
-    PRO_SSL_CLIENT_CONFIG* sslConfig = NULL;
-    IRtpMsgClient*         msgClient = NULL;
+    PRO_SSL_CLIENT_CONFIG* sslConfig   = NULL;
+    IRtpMsgClient*         msgClient   = NULL;
+    CMsgReconnector*       reconnector = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -415,11 +442,19 @@ CMsgClient::Fini()
             return;
         }
 
+        reconnector = m_reconnector;
+        m_reconnector = NULL;
         msgClient = m_msgClient;
         m_msgClient = NULL;
         sslConfig = m_sslConfig;
         m_sslConfig = NULL;
         m_reactor = NULL;
+    }
+
+    if (reconnector != NULL)
+    {
+        reconnector->Fini();
+        reconnector->Release();
     }
 
     DeleteRtpMsgClient(msgClient);
@@ -642,6 +677,23 @@ CMsgClient::GetSendingBytes() const
 bool
 CMsgClient::Reconnect()
 {
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_reactor == NULL || m_reconnector == NULL)
+        {
+            return (false);
+        }
+
+        m_reconnector->Reconnect();
+    }
+
+    return (true);
+}
+
+void
+CMsgClient::Reconnect_i()
+{
     IRtpMsgClient* oldMsgClient = NULL;
 
     {
@@ -649,7 +701,7 @@ CMsgClient::Reconnect()
 
         if (m_reactor == NULL)
         {
-            return (false);
+            return;
         }
 
         IRtpMsgClient* const msgClient = CreateRtpMsgClient(
@@ -667,7 +719,7 @@ CMsgClient::Reconnect()
             );
         if (msgClient == NULL)
         {
-            return (false);
+            return;
         }
 
         msgClient->SetOutputRedline(m_msgConfigInfo.msgc_redline_bytes);
@@ -677,8 +729,6 @@ CMsgClient::Reconnect()
     }
 
     DeleteRtpMsgClient(oldMsgClient);
-
-    return (true);
 }
 
 void
