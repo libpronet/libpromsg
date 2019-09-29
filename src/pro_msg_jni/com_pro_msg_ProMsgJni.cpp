@@ -19,6 +19,7 @@
 #include "com_pro_msg_ProMsgJni.h"
 #include "msg_client_jni.h"
 #include "msg_server_jni.h"
+#include "pronet/pro_memory_pool.h"
 #include "pronet/pro_thread_mutex.h"
 #include "pronet/pro_version.h"
 #include "pronet/pro_z.h"
@@ -50,6 +51,8 @@ struct JAVA_USER_META
     jfieldID  fid_classId;
     jfieldID  fid_userId;
     jfieldID  fid_instId;
+
+    DECLARE_SGI_POOL(0);
 };
 
 static IProReactor*          g_s_reactor = NULL;
@@ -61,7 +64,7 @@ static CProThreadMutex       g_s_lock;
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-/* extern */
+/* static */
 jstring
 PRO_CALLTYPE
 NewJavaString_i(JNIEnv*     env,
@@ -75,7 +78,7 @@ NewJavaString_i(JNIEnv*     env,
     return (env->NewStringUTF(utf8String));
 }
 
-/* extern */
+/* static */
 jobject
 PRO_CALLTYPE
 NewJavaUser_i(JNIEnv*             env,
@@ -133,7 +136,8 @@ MSG_USER_java2cpp_i(JNIEnv*       env,
         const jshort classId = env->GetShortField(javaUser, g_s_javaUserMeta.fid_classId);
         const jlong  userId  = env->GetLongField (javaUser, g_s_javaUserMeta.fid_userId);
         const jint   instId  = env->GetIntField  (javaUser, g_s_javaUserMeta.fid_instId);
-        if (classId <= 0 || classId > 255 || userId < 0 || instId < 0 || instId > 65535)
+        if (classId <= 0 || classId > 255 ||
+            userId < 0 || instId < 0 || instId > 65535)
         {
             return;
         }
@@ -245,7 +249,8 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
             goto EXIT;
         }
 
-        const jclass clazz = env->FindClass("com/pro/msg/ProMsgJni$PRO_MSG_USER");
+        const jclass clazz =
+            env->FindClass("com/pro/msg/ProMsgJni$PRO_MSG_USER");
         if (clazz == NULL)
         {
             goto EXIT;
@@ -260,7 +265,8 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
 
         g_s_javaUserMeta.mid_ctor0 = env->GetMethodID(g_s_javaUserMeta.clazz, "<init>", "()V");
         g_s_javaUserMeta.mid_ctor3 = env->GetMethodID(g_s_javaUserMeta.clazz, "<init>", "(SJI)V");
-        if (g_s_javaUserMeta.mid_ctor0 == NULL || g_s_javaUserMeta.mid_ctor3 == NULL)
+        if (g_s_javaUserMeta.mid_ctor0 == NULL ||
+            g_s_javaUserMeta.mid_ctor3 == NULL)
         {
             env->DeleteGlobalRef(g_s_javaUserMeta.clazz);
             g_s_javaUserMeta.clazz = NULL;
@@ -271,8 +277,9 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
         g_s_javaUserMeta.fid_classId = env->GetFieldID(g_s_javaUserMeta.clazz, "classId", "S");
         g_s_javaUserMeta.fid_userId  = env->GetFieldID(g_s_javaUserMeta.clazz, "userId" , "J");
         g_s_javaUserMeta.fid_instId  = env->GetFieldID(g_s_javaUserMeta.clazz, "instId" , "I");
-        if (g_s_javaUserMeta.fid_classId == NULL || g_s_javaUserMeta.fid_userId == NULL ||
-            g_s_javaUserMeta.fid_instId == NULL)
+        if (g_s_javaUserMeta.fid_classId == NULL ||
+            g_s_javaUserMeta.fid_userId  == NULL ||
+            g_s_javaUserMeta.fid_instId  == NULL)
         {
             env->DeleteGlobalRef(g_s_javaUserMeta.clazz);
             g_s_javaUserMeta.clazz = NULL;
@@ -385,11 +392,13 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         const jsize utfSize = env->GetStringUTFLength(configFileName);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppConfigFileName))
         {
-            env->GetStringUTFRegion(configFileName, 0, uniSize, cppConfigFileName);
+            env->GetStringUTFRegion(
+                configFileName, 0, uniSize, cppConfigFileName);
         }
     }
 
-    if (mmType >= (jshort)RTP_MMT_MSG_MIN && mmType <= (jshort)RTP_MMT_MSG_MAX)
+    if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
+        mmType <= (jshort)RTP_MMT_MSG_MAX)
     {
         cppMmType = (RTP_MM_TYPE)mmType;
     }
@@ -790,7 +799,8 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
                                              jobjectArray dstUsers) /* count <= 255 */
 {
     assert(client != 0);
-    if (client == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
+    if (client == 0 || buf1 == NULL || charset < 0 || charset > 65535 ||
+        dstUsers == NULL)
     {
         return (JNI_FALSE);
     }
@@ -1061,11 +1071,13 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         const jsize utfSize = env->GetStringUTFLength(configFileName);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppConfigFileName))
         {
-            env->GetStringUTFRegion(configFileName, 0, uniSize, cppConfigFileName);
+            env->GetStringUTFRegion(
+                configFileName, 0, uniSize, cppConfigFileName);
         }
     }
 
-    if (mmType >= (jshort)RTP_MMT_MSG_MIN && mmType <= (jshort)RTP_MMT_MSG_MAX)
+    if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
+        mmType <= (jshort)RTP_MMT_MSG_MAX)
     {
         cppMmType = (RTP_MM_TYPE)mmType;
     }
@@ -1092,7 +1104,8 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
             return (0);
         }
 
-        if (!server->Init(g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
+        if (!server->Init(
+            g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
         {
             server->Release();
 
@@ -1314,7 +1327,8 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
                                              jobjectArray dstUsers) /* count <= 255 */
 {
     assert(server != 0);
-    if (server == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
+    if (server == 0 || buf1 == NULL || charset < 0 || charset > 65535 ||
+        dstUsers == NULL)
     {
         return (JNI_FALSE);
     }

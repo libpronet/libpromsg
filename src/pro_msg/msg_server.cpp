@@ -55,7 +55,8 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
         {
             const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+            if (value >= (int)RTP_MMT_MSG_MIN &&
+                value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
             }
@@ -233,7 +234,8 @@ CMsgServer::Init(IProReactor*   reactor,
     assert(reactor != NULL);
     assert(configFileName != NULL);
     assert(configFileName[0] != '\0');
-    if (reactor == NULL || configFileName == NULL || configFileName[0] == '\0')
+    if (reactor == NULL ||
+        configFileName == NULL || configFileName[0] == '\0')
     {
         return (false);
     }
@@ -335,7 +337,8 @@ CMsgServer::Init(IProReactor*   reactor,
                     goto EXIT;
                 }
 
-                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.msgs_ssl_enable_sha1cert);
+                ProSslServerConfig_EnableSha1Cert(
+                    sslConfig, configInfo.msgs_ssl_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     sslConfig,
@@ -521,7 +524,8 @@ CMsgServer::SendMsg(const void*         buf,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    const bool ret = SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
+    const bool ret = SendMsg2(
+        buf, size, NULL, 0, charset, dstUsers, dstUserCount);
 
     return (ret);
 }
@@ -568,7 +572,8 @@ CMsgServer::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgServer->SetOutputRedlineToUsr(redlineBytes);
-        m_msgConfigInfo.msgs_redline_bytes = m_msgServer->GetOutputRedlineToUsr();
+        m_msgConfigInfo.msgs_redline_bytes =
+            m_msgServer->GetOutputRedlineToUsr();
     }
 }
 
@@ -626,7 +631,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
     assert(instId != NULL);
     assert(appData != NULL);
     assert(isC2s != NULL);
-    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
+    if (msgServer == NULL || user == NULL ||
+        user->classId == 0 || user->UserId() == 0 ||
         userPublicIp == NULL || userPublicIp[0] == '\0' ||
         userId == NULL || instId == NULL || appData == NULL || isC2s == NULL)
     {
@@ -687,7 +693,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL ||
+        userPublicIp[0] == '\0')
     {
         return;
     }

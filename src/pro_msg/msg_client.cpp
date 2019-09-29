@@ -56,7 +56,8 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
         {
             const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+            if (value >= (int)RTP_MMT_MSG_MIN &&
+                value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
@@ -219,7 +220,8 @@ CMsgClient::Init(IProReactor*        reactor,
     assert(reactor != NULL);
     assert(configFileName != NULL);
     assert(configFileName[0] != '\0');
-    if (reactor == NULL || configFileName == NULL || configFileName[0] == '\0')
+    if (reactor == NULL ||
+        configFileName == NULL || configFileName[0] == '\0')
     {
         return (false);
     }
@@ -280,7 +282,8 @@ CMsgClient::Init(IProReactor*        reactor,
      * DNS, for reconnecting
      */
     {
-        const PRO_UINT32 serverIp2 = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        const PRO_UINT32 serverIp2 =
+            pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
         if (serverIp2 == (PRO_UINT32)-1 || serverIp2 == 0)
         {
             return (false);
@@ -358,7 +361,8 @@ CMsgClient::Init(IProReactor*        reactor,
                     goto EXIT;
                 }
 
-                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.msgc_ssl_enable_sha1cert);
+                ProSslClientConfig_EnableSha1Cert(
+                    sslConfig, configInfo.msgc_ssl_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     sslConfig,
@@ -371,7 +375,11 @@ CMsgClient::Init(IProReactor*        reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
+                if (!ProSslClientConfig_SetSuiteList(
+                    sslConfig,
+                    &suites[0],
+                    suites.size()
+                    ))
                 {
                     goto EXIT;
                 }
@@ -592,7 +600,8 @@ CMsgClient::SendMsg(const void*         buf,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    const bool ret = SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
+    const bool ret = SendMsg2(
+        buf, size, NULL, 0, charset, dstUsers, dstUserCount);
 
     return (ret);
 }
@@ -741,7 +750,8 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
+        myPublicIp[0] == '\0')
     {
         return;
     }
@@ -766,8 +776,8 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         msgClient->GetSslSuite(suiteName);
 
         printf(
-            "\n CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
-            " server : %s:%u) \n"
+            "\n CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " sslSuite : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -820,7 +830,8 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
 
         printf(
             "\n"
-            " CMsgClient::OnRecvMsg(from : %u-" PRO_PRT64U "-%u, me : %u-" PRO_PRT64U "-%u) \n"
+            " CMsgClient::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
+            " me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
             (unsigned int)srcUser->classId,

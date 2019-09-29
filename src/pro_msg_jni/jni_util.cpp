@@ -110,12 +110,14 @@ JniUtilAttach()
 #endif
 
 #if defined(ANDROID)
-    if (g_s_jvm->AttachCurrentThread(&env, NULL) != JNI_OK || env == NULL)
+    if (g_s_jvm->AttachCurrentThread(&env, NULL) != JNI_OK ||
+        env == NULL)
     {
         return (NULL);
     }
 #else
-    if (g_s_jvm->AttachCurrentThread((void**)&env, NULL) != JNI_OK || env == NULL)
+    if (g_s_jvm->AttachCurrentThread((void**)&env, NULL) != JNI_OK ||
+        env == NULL)
     {
         return (NULL);
     }

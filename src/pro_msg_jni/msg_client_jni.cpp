@@ -124,7 +124,8 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
+        myPublicIp[0] == '\0')
     {
         return;
     }

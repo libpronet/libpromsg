@@ -126,7 +126,8 @@ CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL ||
+        userPublicIp[0] == '\0')
     {
         return;
     }

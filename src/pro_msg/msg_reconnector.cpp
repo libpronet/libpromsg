@@ -137,10 +137,12 @@ CMsgReconnector::Reconnect()
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        PRO_INT64 tickInterval = m_client->m_msgConfigInfo.msgc_reconnect_interval;
+        PRO_INT64 tickInterval =
+            m_client->m_msgConfigInfo.msgc_reconnect_interval;
         tickInterval *= 1000;
 
-        PRO_INT64 tickDelay = m_connectTick + tickInterval - ProGetTickCount64();
+        PRO_INT64 tickDelay =
+            m_connectTick + tickInterval - ProGetTickCount64();
         if (tickDelay < 0)
         {
             tickDelay = 0;

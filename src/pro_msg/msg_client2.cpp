@@ -72,8 +72,8 @@ CMsgClient2::Init(IMsgClientObserver* observer,
             return (false);
         }
 
-        if (!CMsgClient::Init(
-            reactor, configFileName, mmType, serverIp, serverPort, user, password, localIp))
+        if (!CMsgClient::Init(reactor, configFileName, mmType,
+            serverIp, serverPort, user, password, localIp))
         {
             return (false);
         }
@@ -117,7 +117,8 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
+        myPublicIp[0] == '\0')
     {
         return;
     }
@@ -147,8 +148,8 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
         msgClient->GetSslSuite(suiteName);
 
         printf(
-            "\n CMsgClient2::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
-            " server : %s:%u) \n"
+            "\n CMsgClient2::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " sslSuite : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -209,7 +210,8 @@ CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
 
         printf(
             "\n"
-            " CMsgClient2::OnRecvMsg(from : %u-" PRO_PRT64U "-%u, me : %u-" PRO_PRT64U "-%u) \n"
+            " CMsgClient2::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
+            " me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
             (unsigned int)srcUser->classId,

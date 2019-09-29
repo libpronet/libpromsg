@@ -39,7 +39,10 @@ public:
 
     static CMsgReconnector* CreateInstance();
 
-    bool Init(CMsgClient* client, IProReactor* reactor);
+    bool Init(
+        CMsgClient*  client,
+        IProReactor* reactor
+        );
 
     void Fini();
 
