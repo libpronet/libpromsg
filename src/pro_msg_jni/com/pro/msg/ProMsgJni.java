@@ -95,7 +95,7 @@ public class ProMsgJni
     }
 
     /*
-     * this file's version is [1.2.0]
+     * this file's version is [1.5.0]
      */
     public static native void getCoreVersion(
         short[] major_1, /* = null */
