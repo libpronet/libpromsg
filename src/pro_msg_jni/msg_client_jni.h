@@ -42,7 +42,8 @@ private:
         jobject   listener,
         jmethodID onOkMsg,
         jmethodID onRecvMsg,
-        jmethodID onCloseMsg
+        jmethodID onCloseMsg,
+        jmethodID onHeartbeatMsg
         );
 
     virtual ~CMsgClientJni();
@@ -68,12 +69,18 @@ private:
         bool           tcpConnected
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+        IRtpMsgClient* msgClient,
+        PRO_INT64      peerAliveTick
+        );
+
 private:
 
     const jobject   m_listener;
     const jmethodID m_onOkMsg;
     const jmethodID m_onRecvMsg;
     const jmethodID m_onCloseMsg;
+    const jmethodID m_onHeartbeatMsg;
 };
 
 /////////////////////////////////////////////////////////////////////////////

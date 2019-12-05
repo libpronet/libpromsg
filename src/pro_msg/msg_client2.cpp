@@ -283,3 +283,37 @@ CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
     observer->OnCloseMsg(this, errorCode, sslCode, tcpConnected);
     observer->Release();
 }
+
+void
+PRO_CALLTYPE
+CMsgClient2::OnHeartbeatMsg(IRtpMsgClient* msgClient,
+                            PRO_INT64      peerAliveTick)
+{
+    assert(msgClient != NULL);
+    if (msgClient == NULL)
+    {
+        return;
+    }
+
+    IMsgClientObserver* observer = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_msgClient == NULL)
+        {
+            return;
+        }
+
+        if (msgClient != m_msgClient)
+        {
+            return;
+        }
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    observer->OnHeartbeatMsg(this, peerAliveTick);
+    observer->Release();
+}

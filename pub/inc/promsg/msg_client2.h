@@ -60,6 +60,11 @@ public:
         long         sslCode,
         bool         tcpConnected
         ) = 0;
+
+    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+        CMsgClient2* msgClient,
+        PRO_INT64    peerAliveTick
+        ) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,6 +115,11 @@ private:
         long           errorCode,
         long           sslCode,
         bool           tcpConnected
+        );
+
+    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+        IRtpMsgClient* msgClient,
+        PRO_INT64      peerAliveTick
         );
 
 private:

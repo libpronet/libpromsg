@@ -753,6 +753,38 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
 
 void
 PRO_CALLTYPE
+CMsgServer::OnHeartbeatUser(IRtpMsgServer*      msgServer,
+                            const RTP_MSG_USER* user,
+                            PRO_INT64           peerAliveTick)
+{
+    assert(msgServer != NULL);
+    assert(user != NULL);
+    if (msgServer == NULL || user == NULL)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_reactor == NULL || m_msgServer == NULL)
+        {
+            return;
+        }
+
+        if (msgServer != m_msgServer)
+        {
+            return;
+        }
+
+        /*
+         * ...
+         */
+    }
+}
+
+void
+PRO_CALLTYPE
 CMsgServer::OnRecvMsg(IRtpMsgServer*      msgServer,
                       const void*         buf,
                       unsigned long       size,

@@ -42,6 +42,7 @@ private:
         jobject   listener,
         jmethodID onOkUser,
         jmethodID onCloseUser,
+        jmethodID onHeartbeatUser,
         jmethodID onRecvMsg
         );
 
@@ -62,6 +63,12 @@ private:
         long                sslCode
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatUser(
+        IRtpMsgServer*      msgServer,
+        const RTP_MSG_USER* user,
+        PRO_INT64           peerAliveTick
+        );
+
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
@@ -75,6 +82,7 @@ private:
     const jobject   m_listener;
     const jmethodID m_onOkUser;
     const jmethodID m_onCloseUser;
+    const jmethodID m_onHeartbeatUser;
     const jmethodID m_onRecvMsg;
 };
 

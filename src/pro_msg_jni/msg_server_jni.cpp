@@ -69,11 +69,13 @@ CMsgServerJni::CreateInstance(JNIEnv* env,
         return (NULL);
     }
 
-    const jmethodID onOkUser    = env->GetMethodID(clazz, "msgServerOnOkUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
-    const jmethodID onCloseUser = env->GetMethodID(clazz, "msgServerOnCloseUser" , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
-    const jmethodID onRecvMsg   = env->GetMethodID(clazz, "msgServerOnRecvMsg"   , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
+    const jmethodID onOkUser        = env->GetMethodID(clazz, "msgServerOnOkUser"       , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
+    const jmethodID onCloseUser     = env->GetMethodID(clazz, "msgServerOnCloseUser"    , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V");
+    const jmethodID onHeartbeatUser = env->GetMethodID(clazz, "msgServerOnHeartbeatUser", "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;J)V");
+    const jmethodID onRecvMsg       = env->GetMethodID(clazz, "msgServerOnRecvMsg"      , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
     env->DeleteLocalRef(clazz); /* release local reference */
-    if (onOkUser == NULL || onCloseUser == NULL || onRecvMsg == NULL)
+    if (onOkUser == NULL || onCloseUser == NULL || onHeartbeatUser == NULL ||
+        onRecvMsg == NULL)
     {
         return (NULL);
     }
@@ -84,8 +86,8 @@ CMsgServerJni::CreateInstance(JNIEnv* env,
         return (NULL);
     }
 
-    CMsgServerJni* const server =
-        new CMsgServerJni(listener2, onOkUser, onCloseUser, onRecvMsg);
+    CMsgServerJni* const server = new CMsgServerJni(
+        listener2, onOkUser, onCloseUser, onHeartbeatUser, onRecvMsg);
 
     return (server);
 }
@@ -93,11 +95,13 @@ CMsgServerJni::CreateInstance(JNIEnv* env,
 CMsgServerJni::CMsgServerJni(jobject   listener,
                              jmethodID onOkUser,
                              jmethodID onCloseUser,
+                             jmethodID onHeartbeatUser,
                              jmethodID onRecvMsg)
                              :
 m_listener(listener),
 m_onOkUser(onOkUser),
 m_onCloseUser(onCloseUser),
+m_onHeartbeatUser(onHeartbeatUser),
 m_onRecvMsg(onRecvMsg)
 {
 }
@@ -230,6 +234,57 @@ CMsgServerJni::OnCloseUser(IRtpMsgServer*      msgServer,
         (jobject)javaUser,
         (jint)   errorCode,
         (jint)   sslCode
+        );
+    env->DeleteLocalRef(javaUser); /* release local reference */
+    JniUtilDetach();
+}
+
+void
+PRO_CALLTYPE
+CMsgServerJni::OnHeartbeatUser(IRtpMsgServer*      msgServer,
+                               const RTP_MSG_USER* user,
+                               PRO_INT64           peerAliveTick)
+{
+    assert(msgServer != NULL);
+    assert(user != NULL);
+    if (msgServer == NULL || user == NULL)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_reactor == NULL || m_msgServer == NULL)
+        {
+            return;
+        }
+
+        if (msgServer != m_msgServer)
+        {
+            return;
+        }
+    }
+
+    JNIEnv* const env = JniUtilAttach();
+    if (env == NULL)
+    {
+        return;
+    }
+
+    const jobject javaUser = NewJavaUser_i(env, *user);
+    if (javaUser == NULL)
+    {
+        JniUtilDetach();
+
+        return;
+    }
+
+    env->CallVoidMethod(
+        m_listener,
+        m_onHeartbeatUser,
+        (jlong)this,
+        (jlong)peerAliveTick
         );
     env->DeleteLocalRef(javaUser); /* release local reference */
     JniUtilDetach();
