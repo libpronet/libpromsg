@@ -20,6 +20,7 @@
 #include "msg_client_jni.h"
 #include "msg_server_jni.h"
 #include "pronet/pro_memory_pool.h"
+#include "pronet/pro_thread.h"
 #include "pronet/pro_thread_mutex.h"
 #include "pronet/pro_version.h"
 #include "pronet/pro_z.h"
@@ -289,6 +290,17 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
 
         g_s_reactor = reactor;
     }
+
+    {{{
+        printf(
+            "\n Java_com_pro_msg_ProMsgJni_init(threadCount : %u,"
+            " processId : %u/0x%X) \n"
+            ,
+            (unsigned int)threadCount,
+            (unsigned int)ProGetProcessId(),
+            (unsigned int)ProGetProcessId()
+            );
+    }}}
 
     return (JNI_TRUE);
 
