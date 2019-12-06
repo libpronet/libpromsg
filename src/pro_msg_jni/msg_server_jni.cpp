@@ -283,8 +283,9 @@ CMsgServerJni::OnHeartbeatUser(IRtpMsgServer*      msgServer,
     env->CallVoidMethod(
         m_listener,
         m_onHeartbeatUser,
-        (jlong)this,
-        (jlong)peerAliveTick
+        (jlong)  this,
+        (jobject)javaUser,
+        (jlong)  peerAliveTick
         );
     env->DeleteLocalRef(javaUser); /* release local reference */
     JniUtilDetach();
