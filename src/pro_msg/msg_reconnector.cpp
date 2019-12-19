@@ -154,11 +154,13 @@ CMsgReconnector::Reconnect()
 
 void
 PRO_CALLTYPE
-CMsgReconnector::OnTimer(unsigned long timerId,
-                         PRO_INT64     userData)
+CMsgReconnector::OnTimer(void*      factory,
+                         PRO_UINT64 timerId,
+                         PRO_INT64  userData)
 {
+    assert(factory != NULL);
     assert(timerId > 0);
-    if (timerId == 0)
+    if (factory == NULL || timerId == 0)
     {
         return;
     }

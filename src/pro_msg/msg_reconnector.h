@@ -59,15 +59,16 @@ private:
     virtual ~CMsgReconnector();
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
 private:
 
     CMsgClient*     m_client;
     IProReactor*    m_reactor;
-    unsigned long   m_timerId;
+    PRO_UINT64      m_timerId;
     PRO_INT64       m_connectTick;
     CProThreadMutex m_lock;
 
