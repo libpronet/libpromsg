@@ -25,6 +25,7 @@
 #include "pronet/pro_ssl_util.h"
 #include "pronet/pro_stl.h"
 #include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_time_util.h"
 #include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
@@ -770,15 +771,21 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         }
     }
 
-    if (1)
+    if (0)
     {{{
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            "\n"
+            "%s \n"
+            " CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser->classId,
             myUser->UserId(),
             (unsigned int)myUser->instId,
@@ -828,12 +835,17 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
             "\n"
+            "%s \n"
             " CMsgClient::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
             " me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
+            timeString.c_str(),
             (unsigned int)srcUser->classId,
             srcUser->UserId(),
             (unsigned int)srcUser->instId,
@@ -872,15 +884,21 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
         }
     }
 
-    if (1)
+    if (0)
     {{{
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            "%s \n"
+            " CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser.classId,
             myUser.UserId(),
             (unsigned int)myUser.instId,

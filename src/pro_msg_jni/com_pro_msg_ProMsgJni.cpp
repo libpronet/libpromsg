@@ -22,6 +22,7 @@
 #include "pronet/pro_memory_pool.h"
 #include "pronet/pro_thread.h"
 #include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_time_util.h"
 #include "pronet/pro_version.h"
 #include "pronet/pro_z.h"
 #include <cassert>
@@ -292,10 +293,16 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
     }
 
     {{{
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n Java_com_pro_msg_ProMsgJni_init(threadCount : %u,"
+            "\n"
+            "%s \n"
+            " Java_com_pro_msg_ProMsgJni_init(threadCount : %u,"
             " processId : %u/0x%X) \n"
             ,
+            timeString.c_str(),
             (unsigned int)threadCount,
             (unsigned int)ProGetProcessId(),
             (unsigned int)ProGetProcessId()

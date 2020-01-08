@@ -21,7 +21,7 @@ package com.pro.msg;
 /*
  * please refer to "libpronet/pub/inc/pronet/rtp_msg.h"
  *
- * the file's version is [1.8.0]
+ * the file's version is [1.8.1]
  */
 public class ProMsgJni
 {
