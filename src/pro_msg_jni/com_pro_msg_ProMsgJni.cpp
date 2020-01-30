@@ -347,8 +347,8 @@ Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
         g_s_reactor = NULL;
     }
 
-    CProStlSet<PRO_INT64>::const_iterator itr = servers.begin();
-    CProStlSet<PRO_INT64>::const_iterator end = servers.end();
+    CProStlSet<PRO_INT64>::iterator itr = servers.begin();
+    CProStlSet<PRO_INT64>::iterator end = servers.end();
 
     for (; itr != end; ++itr)
     {
