@@ -20,7 +20,9 @@
 #include "pronet/pro_a.h"
 #include "pronet/pro_z.h"
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
+#include <windows.h>
+#else
 #include <pthread.h>
 #endif
 
@@ -35,7 +37,10 @@ extern "C" {
 ////
 
 static JavaVM*       g_s_jvm = NULL;
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+static jint          g_s_ver = 0;
+#if defined(_WIN32) || defined(_WIN32_WCE)
+static unsigned long g_s_key = (unsigned long)-1;
+#else
 static pthread_key_t g_s_key = (pthread_key_t)-1;
 #endif
 
@@ -44,50 +49,48 @@ static pthread_key_t g_s_key = (pthread_key_t)-1;
 
 static
 void
-JniUtilCleanup_i(void* env)
+JniUtilCleanup_i(void*)
 {
-    if (env == NULL || g_s_jvm == NULL)
-    {
-        return;
-    }
-
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-    g_s_jvm->DetachCurrentThread();
-#endif
-}
-
-static
-void
-PRO_CALLTYPE
-JniUtilStartup_i(JavaVM* jvm)
-{
-    assert(jvm != NULL);
-    if (jvm == NULL)
-    {
-        return;
-    }
-
     if (g_s_jvm == NULL)
     {
-        g_s_jvm = jvm;
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-        pthread_key_create(&g_s_key, &JniUtilCleanup_i);
-#endif
+        return;
     }
+
+    JNIEnv* env = NULL;
+    jint    err;
+
+    err = g_s_jvm->GetEnv((void**)&env, g_s_ver);
+    if (err != JNI_OK || env == NULL)
+    {
+        return;
+    }
+
+    g_s_jvm->DetachCurrentThread();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-JNIEXPORT
-jint
-JNICALL
-JNI_OnLoad(JavaVM* jvm,
-           void*   reserved)
+void
+PRO_CALLTYPE
+JniUtilOnLoad(JavaVM* jvm,
+              jint    jdkVer)
 {
-    JniUtilStartup_i(jvm);
+    assert(jvm != NULL);
+    assert(g_s_jvm == NULL);
+    if (jvm == NULL || g_s_jvm != NULL)
+    {
+        return;
+    }
 
-    return (JNI_VERSION_1_2);
+    g_s_jvm = jvm;
+    g_s_ver = jdkVer;
+
+#if defined(_WIN32) || defined(_WIN32_WCE)
+    g_s_key = ::TlsAlloc();
+#else
+    pthread_key_create(&g_s_key, &JniUtilCleanup_i);
+#endif
 }
 
 JNIEnv*
@@ -100,30 +103,37 @@ JniUtilAttach()
     }
 
     JNIEnv* env = NULL;
+    jint    err;
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+    err = g_s_jvm->GetEnv((void**)&env, g_s_ver);
+    if (err == JNI_OK && env != NULL)
+    {
+        return (env);
+    }
+
+#if defined(_WIN32) || defined(_WIN32_WCE)
+    env = (JNIEnv*)::TlsGetValue(g_s_key);
+#else
     env = (JNIEnv*)pthread_getspecific(g_s_key);
+#endif
     if (env != NULL)
     {
         return (env);
     }
-#endif
 
 #if defined(ANDROID)
-    if (g_s_jvm->AttachCurrentThread(&env, NULL) != JNI_OK ||
-        env == NULL)
-    {
-        return (NULL);
-    }
+    err = g_s_jvm->AttachCurrentThread(&env, NULL);
 #else
-    if (g_s_jvm->AttachCurrentThread((void**)&env, NULL) != JNI_OK ||
-        env == NULL)
+    err = g_s_jvm->AttachCurrentThread((void**)&env, NULL);
+#endif
+    if (err != JNI_OK || env == NULL)
     {
         return (NULL);
     }
-#endif
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
+    ::TlsSetValue(g_s_key, env);
+#else
     pthread_setspecific(g_s_key, env);
 #endif
 
@@ -139,8 +149,24 @@ JniUtilDetach()
         return;
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+    JNIEnv* env = NULL;
+
+#if defined(_WIN32) || defined(_WIN32_WCE)
+    env = (JNIEnv*)::TlsGetValue(g_s_key);
+#else
+    env = (JNIEnv*)pthread_getspecific(g_s_key);
+#endif
+    if (env == NULL)
+    {
+        return;
+    }
+
     g_s_jvm->DetachCurrentThread();
+
+#if defined(_WIN32) || defined(_WIN32_WCE)
+    ::TlsSetValue(g_s_key, NULL);
+#else
+    pthread_setspecific(g_s_key, NULL);
 #endif
 }
 

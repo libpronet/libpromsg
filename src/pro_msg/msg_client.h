@@ -84,7 +84,7 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_ssl_sni;
     bool                         msgc_ssl_aes256;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -202,7 +202,7 @@ private:
 
     void Reconnect_i();
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

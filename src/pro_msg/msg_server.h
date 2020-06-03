@@ -91,7 +91,7 @@ struct MSG_SERVER_CONFIG_INFO
     CProStlVector<CProStlString> msgs_ssl_certfiles;
     CProStlString                msgs_ssl_keyfile;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ protected:
     IRtpMsgServer*                   m_msgServer;
     mutable CProRecursiveThreadMutex m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

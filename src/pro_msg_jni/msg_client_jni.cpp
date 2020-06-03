@@ -18,6 +18,7 @@
 
 #include "msg_client_jni.h"
 #include "jni_util.h"
+#include "pronet/pro_memory_pool.h"
 #include "pronet/pro_thread_mutex.h"
 #include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
@@ -64,24 +65,44 @@ CMsgClientJni::CreateInstance(JNIEnv* env,
     }
 
     const jclass clazz = env->GetObjectClass(listener);
-    if (clazz == NULL)
+    if (clazz == NULL || env->ExceptionCheck())
     {
         return (NULL);
     }
 
-    const jmethodID onOkMsg        = env->GetMethodID(clazz, "msgClientOnOk"       , "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
-    const jmethodID onRecvMsg      = env->GetMethodID(clazz, "msgClientOnRecv"     , "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
-    const jmethodID onCloseMsg     = env->GetMethodID(clazz, "msgClientOnClose"    , "(JIIZ)V");
-    const jmethodID onHeartbeatMsg = env->GetMethodID(clazz, "msgClientOnHeartbeat", "(JJ)V");
-    env->DeleteLocalRef(clazz); /* release local reference */
-    if (onOkMsg == NULL || onRecvMsg == NULL || onCloseMsg == NULL ||
-        onHeartbeatMsg == NULL)
+    jmethodID onOkMsg        = NULL;
+    jmethodID onRecvMsg      = NULL;
+    jmethodID onCloseMsg     = NULL;
+    jmethodID onHeartbeatMsg = NULL;
+
+    onOkMsg = env->GetMethodID(clazz, "msgClientOnOk",
+        "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
+    if (onOkMsg == NULL || env->ExceptionCheck())
+    {
+        return (NULL);
+    }
+
+    onRecvMsg = env->GetMethodID(clazz, "msgClientOnRecv",
+        "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
+    if (onRecvMsg == NULL || env->ExceptionCheck())
+    {
+        return (NULL);
+    }
+
+    onCloseMsg = env->GetMethodID(clazz, "msgClientOnClose", "(JIIZ)V");
+    if (onCloseMsg == NULL || env->ExceptionCheck())
+    {
+        return (NULL);
+    }
+
+    onHeartbeatMsg = env->GetMethodID(clazz, "msgClientOnHeartbeat", "(JJ)V");
+    if (onHeartbeatMsg == NULL || env->ExceptionCheck())
     {
         return (NULL);
     }
 
     const jobject listener2 = env->NewGlobalRef(listener);
-    if (listener2 == NULL)
+    if (listener2 == NULL || env->ExceptionCheck())
     {
         return (NULL);
     }
@@ -165,7 +186,7 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
     const jstring javaPublicIp = NewJavaString_i(env, myPublicIp);
     if (javaPublicIp == NULL)
     {
-        env->DeleteLocalRef(javaUser); /* release local reference */
+        env->DeleteLocalRef(javaUser);
         JniUtilDetach();
 
         return;
@@ -178,8 +199,8 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
         (jobject)javaUser,
         (jstring)javaPublicIp
         );
-    env->DeleteLocalRef(javaPublicIp); /* release local reference */
-    env->DeleteLocalRef(javaUser);     /* release local reference */
+    env->DeleteLocalRef(javaPublicIp);
+    env->DeleteLocalRef(javaUser);
     JniUtilDetach();
 }
 
@@ -221,21 +242,26 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
     }
 
     const jbyteArray javaBuf = env->NewByteArray(size);
-    if (javaBuf == NULL)
+    if (javaBuf == NULL || env->ExceptionCheck())
     {
         JniUtilDetach();
 
         return;
     }
-    else
+
+    env->SetByteArrayRegion(javaBuf, 0, size, (jbyte*)buf);
+    if (env->ExceptionCheck())
     {
-        env->SetByteArrayRegion(javaBuf, 0, size, (jbyte*)buf);
+        env->DeleteLocalRef(javaBuf);
+        JniUtilDetach();
+
+        return;
     }
 
     const jobject javaUser = NewJavaUser_i(env, *srcUser);
     if (javaUser == NULL)
     {
-        env->DeleteLocalRef(javaBuf); /* release local reference */
+        env->DeleteLocalRef(javaBuf);
         JniUtilDetach();
 
         return;
@@ -249,8 +275,8 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
         (jint)      charset,
         (jobject)   javaUser
         );
-    env->DeleteLocalRef(javaUser); /* release local reference */
-    env->DeleteLocalRef(javaBuf);  /* release local reference */
+    env->DeleteLocalRef(javaUser);
+    env->DeleteLocalRef(javaBuf);
     JniUtilDetach();
 }
 

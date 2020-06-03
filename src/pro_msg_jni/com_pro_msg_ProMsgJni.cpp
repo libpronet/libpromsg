@@ -17,6 +17,7 @@
  */
 
 #include "com_pro_msg_ProMsgJni.h"
+#include "jni_util.h"
 #include "msg_client_jni.h"
 #include "msg_server_jni.h"
 #include "pronet/pro_memory_pool.h"
@@ -54,13 +55,13 @@ struct JAVA_USER_META
     jfieldID  fid_userId;
     jfieldID  fid_instId;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 static IProReactor*          g_s_reactor = NULL;
 static CProStlSet<PRO_INT64> g_s_clients;
 static CProStlSet<PRO_INT64> g_s_servers;
-static JAVA_USER_META        g_s_javaUserMeta;
+static JAVA_USER_META        g_s_meta;
 static CProThreadMutex       g_s_lock;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,7 +78,13 @@ NewJavaString_i(JNIEnv*     env,
         return (NULL);
     }
 
-    return (env->NewStringUTF(utf8String));
+    jstring javaString = env->NewStringUTF(utf8String);
+    if (env->ExceptionCheck())
+    {
+        javaString = NULL;
+    }
+
+    return (javaString);
 }
 
 /* static */
@@ -96,18 +103,22 @@ NewJavaUser_i(JNIEnv*             env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        if (g_s_javaUserMeta.clazz == NULL)
+        if (g_s_meta.clazz == NULL)
         {
             return (NULL);
         }
 
         javaUser = env->NewObject(
-            g_s_javaUserMeta.clazz,
-            g_s_javaUserMeta.mid_ctor3,
+            g_s_meta.clazz,
+            g_s_meta.mid_ctor3,
             (jshort)user.classId,
             (jlong) user.UserId(),
             (jint)  user.instId
             );
+        if (env->ExceptionCheck())
+        {
+            javaUser = NULL;
+        }
     }
 
     return (javaUser);
@@ -130,14 +141,14 @@ MSG_USER_java2cpp_i(JNIEnv*       env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        if (g_s_javaUserMeta.clazz == NULL)
+        if (g_s_meta.clazz == NULL)
         {
             return;
         }
 
-        const jshort classId = env->GetShortField(javaUser, g_s_javaUserMeta.fid_classId);
-        const jlong  userId  = env->GetLongField (javaUser, g_s_javaUserMeta.fid_userId);
-        const jint   instId  = env->GetIntField  (javaUser, g_s_javaUserMeta.fid_instId);
+        const jshort classId = env->GetShortField(javaUser, g_s_meta.fid_classId);
+        const jlong  userId  = env->GetLongField (javaUser, g_s_meta.fid_userId);
+        const jint   instId  = env->GetIntField  (javaUser, g_s_meta.fid_instId);
         if (classId <= 0 || classId > 255 ||
             userId < 0 || instId < 0 || instId > 65535)
         {
@@ -165,14 +176,14 @@ MSG_USER_cpp2java_i(JNIEnv*             env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        if (g_s_javaUserMeta.clazz == NULL)
+        if (g_s_meta.clazz == NULL)
         {
             return;
         }
 
-        env->SetShortField(javaUser, g_s_javaUserMeta.fid_classId, (jshort)cppUser.classId);
-        env->SetLongField (javaUser, g_s_javaUserMeta.fid_userId , (jlong) cppUser.UserId());
-        env->SetIntField  (javaUser, g_s_javaUserMeta.fid_instId , (jint)  cppUser.instId);
+        env->SetShortField(javaUser, g_s_meta.fid_classId, (jshort)cppUser.classId);
+        env->SetLongField (javaUser, g_s_meta.fid_userId , (jlong) cppUser.UserId());
+        env->SetIntField  (javaUser, g_s_meta.fid_instId , (jint)  cppUser.instId);
     }
 }
 
@@ -180,42 +191,71 @@ MSG_USER_cpp2java_i(JNIEnv*             env,
 ////
 
 JNIEXPORT
+jint
+JNICALL
+JNI_OnLoad(JavaVM* jvm,
+           void*   reserved)
+{
+    JniUtilOnLoad(jvm, JNI_VERSION_1_6);
+
+    return (JNI_VERSION_1_6);
+}
+
+JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
                                           jclass      thiz,
-                                          jshortArray major_1, /* = null */
-                                          jshortArray minor_1, /* = null */
-                                          jshortArray patch_1) /* = null */
+                                          jshortArray major_1,
+                                          jshortArray minor_1,
+                                          jshortArray patch_1)
 {
-    if (major_1 != NULL && env->GetArrayLength(major_1) > 0)
+    assert(major_1 != NULL);
+    assert(minor_1 != NULL);
+    assert(patch_1 != NULL);
+    if (major_1 == NULL || minor_1 == NULL || patch_1 == NULL)
+    {
+        return;
+    }
+
+    if (env->GetArrayLength(major_1) <= 0 ||
+        env->GetArrayLength(minor_1) <= 0 ||
+        env->GetArrayLength(patch_1) <= 0)
+    {
+        return;
+    }
+
     {
         jshort* const p = env->GetShortArrayElements(major_1, NULL);
-        if (p != NULL)
+        if (p == NULL || env->ExceptionCheck())
         {
-            *p = PRO_VER_MAJOR;
-            env->ReleaseShortArrayElements(major_1, p, 0);
+            return;
         }
+
+        *p = PRO_VER_MAJOR;
+        env->ReleaseShortArrayElements(major_1, p, 0);
     }
 
-    if (minor_1 != NULL && env->GetArrayLength(minor_1) > 0)
     {
         jshort* const p = env->GetShortArrayElements(minor_1, NULL);
-        if (p != NULL)
+        if (p == NULL || env->ExceptionCheck())
         {
-            *p = PRO_VER_MINOR;
-            env->ReleaseShortArrayElements(minor_1, p, 0);
+            return;
         }
+
+        *p = PRO_VER_MINOR;
+        env->ReleaseShortArrayElements(minor_1, p, 0);
     }
 
-    if (patch_1 != NULL && env->GetArrayLength(patch_1) > 0)
     {
         jshort* const p = env->GetShortArrayElements(patch_1, NULL);
-        if (p != NULL)
+        if (p == NULL || env->ExceptionCheck())
         {
-            *p = PRO_VER_PATCH;
-            env->ReleaseShortArrayElements(patch_1, p, 0);
+            return;
         }
+
+        *p = PRO_VER_PATCH;
+        env->ReleaseShortArrayElements(patch_1, p, 0);
     }
 }
 
@@ -233,14 +273,14 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
         return (JNI_FALSE);
     }
 
-    IProReactor* reactor = NULL;
+    IProReactor*   reactor = NULL;
+    JAVA_USER_META meta;
 
     {
         CProThreadMutexGuard mon(g_s_lock);
 
         assert(g_s_reactor == NULL);
-        assert(g_s_javaUserMeta.clazz == NULL);
-        if (g_s_reactor != NULL || g_s_javaUserMeta.clazz != NULL)
+        if (g_s_reactor != NULL)
         {
             return (JNI_FALSE);
         }
@@ -253,43 +293,49 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
 
         const jclass clazz =
             env->FindClass("com/pro/msg/ProMsgJni$PRO_MSG_USER");
-        if (clazz == NULL)
+        if (clazz == NULL || env->ExceptionCheck())
         {
             goto EXIT;
         }
 
-        g_s_javaUserMeta.clazz = (jclass)env->NewGlobalRef(clazz);
-        env->DeleteLocalRef(clazz); /* release local reference */
-        if (g_s_javaUserMeta.clazz == NULL)
+        meta.clazz = (jclass)env->NewGlobalRef(clazz);
+        if (meta.clazz == NULL || env->ExceptionCheck())
         {
             goto EXIT;
         }
 
-        g_s_javaUserMeta.mid_ctor0 = env->GetMethodID(g_s_javaUserMeta.clazz, "<init>", "()V");
-        g_s_javaUserMeta.mid_ctor3 = env->GetMethodID(g_s_javaUserMeta.clazz, "<init>", "(SJI)V");
-        if (g_s_javaUserMeta.mid_ctor0 == NULL ||
-            g_s_javaUserMeta.mid_ctor3 == NULL)
+        meta.mid_ctor0 = env->GetMethodID(meta.clazz, "<init>", "()V");
+        if (meta.mid_ctor0 == NULL || env->ExceptionCheck())
         {
-            env->DeleteGlobalRef(g_s_javaUserMeta.clazz);
-            g_s_javaUserMeta.clazz = NULL;
-
             goto EXIT;
         }
 
-        g_s_javaUserMeta.fid_classId = env->GetFieldID(g_s_javaUserMeta.clazz, "classId", "S");
-        g_s_javaUserMeta.fid_userId  = env->GetFieldID(g_s_javaUserMeta.clazz, "userId" , "J");
-        g_s_javaUserMeta.fid_instId  = env->GetFieldID(g_s_javaUserMeta.clazz, "instId" , "I");
-        if (g_s_javaUserMeta.fid_classId == NULL ||
-            g_s_javaUserMeta.fid_userId  == NULL ||
-            g_s_javaUserMeta.fid_instId  == NULL)
+        meta.mid_ctor3 = env->GetMethodID(meta.clazz, "<init>", "(SJI)V");
+        if (meta.mid_ctor3 == NULL || env->ExceptionCheck())
         {
-            env->DeleteGlobalRef(g_s_javaUserMeta.clazz);
-            g_s_javaUserMeta.clazz = NULL;
+            goto EXIT;
+        }
 
+        meta.fid_classId = env->GetFieldID(meta.clazz, "classId", "S");
+        if (meta.fid_classId == NULL || env->ExceptionCheck())
+        {
+            goto EXIT;
+        }
+
+        meta.fid_userId = env->GetFieldID(meta.clazz, "userId", "J");
+        if (meta.fid_userId == NULL || env->ExceptionCheck())
+        {
+            goto EXIT;
+        }
+
+        meta.fid_instId = env->GetFieldID(meta.clazz, "instId", "I");
+        if (meta.fid_instId == NULL || env->ExceptionCheck())
+        {
             goto EXIT;
         }
 
         g_s_reactor = reactor;
+        g_s_meta    = meta;
     }
 
     {{{
@@ -313,6 +359,11 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
 
 EXIT:
 
+    if (meta.clazz != NULL)
+    {
+        env->DeleteGlobalRef(meta.clazz);
+    }
+
     ProDeleteReactor(reactor);
 
     return (JNI_FALSE);
@@ -331,13 +382,13 @@ Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        if (g_s_reactor == NULL || g_s_javaUserMeta.clazz == NULL)
+        if (g_s_reactor == NULL)
         {
             return;
         }
 
-        env->DeleteGlobalRef(g_s_javaUserMeta.clazz);
-        g_s_javaUserMeta.clazz = NULL;
+        env->DeleteGlobalRef(g_s_meta.clazz);
+        g_s_meta.clazz = NULL;
 
         servers = g_s_servers;
         g_s_servers.clear();
@@ -414,6 +465,11 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
             env->GetStringUTFRegion(
                 configFileName, 0, uniSize, cppConfigFileName);
         }
+
+        if (env->ExceptionCheck())
+        {
+            return (0);
+        }
     }
 
     if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
@@ -429,6 +485,11 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppServerIp))
         {
             env->GetStringUTFRegion(serverIp, 0, uniSize, cppServerIp);
+        }
+
+        if (env->ExceptionCheck())
+        {
+            return (0);
         }
     }
 
@@ -450,6 +511,11 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         {
             env->GetStringUTFRegion(password, 0, uniSize, cppPassword);
         }
+
+        if (env->ExceptionCheck())
+        {
+            return (0);
+        }
     }
 
     if (localIp != NULL)
@@ -459,6 +525,11 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppLocalIp))
         {
             env->GetStringUTFRegion(localIp, 0, uniSize, cppLocalIp);
+        }
+
+        if (env->ExceptionCheck())
+        {
+            return (0);
         }
     }
 
@@ -838,7 +909,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
         for (; i < c; ++i)
         {
             const jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
-            if (javaUser == NULL)
+            if (javaUser == NULL || env->ExceptionCheck())
             {
                 return (JNI_FALSE);
             }
@@ -847,7 +918,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
             MSG_USER_java2cpp_i(env, javaUser, cppUser);
 
             cppDstUsers.push_back(cppUser);
-            env->DeleteLocalRef(javaUser); /* release local reference */
+            env->DeleteLocalRef(javaUser);
         }
     }
 
@@ -872,7 +943,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
 
     const jsize  buf1_size = env->GetArrayLength(buf1);
     jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
-    if (buf1_size <= 0 || buf1_p == NULL)
+    if (buf1_size <= 0 || buf1_p == NULL || env->ExceptionCheck())
     {
         client2->Release();
 
@@ -885,7 +956,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
     {
         buf2_size = env->GetArrayLength(buf2);
         buf2_p    = env->GetByteArrayElements(buf2, NULL);
-        if (buf2_size <= 0 || buf2_p == NULL)
+        if (buf2_size <= 0 || buf2_p == NULL || env->ExceptionCheck())
         {
             env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
             client2->Release();
@@ -1093,6 +1164,11 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
             env->GetStringUTFRegion(
                 configFileName, 0, uniSize, cppConfigFileName);
         }
+
+        if (env->ExceptionCheck())
+        {
+            return (0);
+        }
     }
 
     if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
@@ -1243,6 +1319,50 @@ Java_com_pro_msg_ProMsgJni_msgServerGetServicePort(JNIEnv* env,
 }
 
 JNIEXPORT
+jstring
+JNICALL
+Java_com_pro_msg_ProMsgJni_msgServerGetSslSuite(JNIEnv* env,
+                                                jclass  thiz,
+                                                jlong   server,
+                                                jobject user)
+{
+    assert(server != 0);
+    assert(user != NULL);
+    if (server == 0 || user == NULL)
+    {
+        return (NULL);
+    }
+
+    RTP_MSG_USER cppUser;
+    MSG_USER_java2cpp_i(env, user, cppUser);
+
+    CMsgServerJni* server2 = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        if (g_s_servers.find(server) != g_s_servers.end())
+        {
+            server2 = (CMsgServerJni*)server;
+            server2->AddRef();
+        }
+    }
+
+    jstring javaSuiteName = NULL;
+
+    if (server2 != NULL)
+    {
+        char cppSuiteName[64] = "";
+        server2->GetSslSuite(cppUser, cppSuiteName);
+
+        javaSuiteName = NewJavaString_i(env, cppSuiteName);
+        server2->Release();
+    }
+
+    return (javaSuiteName);
+}
+
+JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
@@ -1366,7 +1486,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
         for (; i < c; ++i)
         {
             const jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
-            if (javaUser == NULL)
+            if (javaUser == NULL || env->ExceptionCheck())
             {
                 return (JNI_FALSE);
             }
@@ -1375,7 +1495,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
             MSG_USER_java2cpp_i(env, javaUser, cppUser);
 
             cppDstUsers.push_back(cppUser);
-            env->DeleteLocalRef(javaUser); /* release local reference */
+            env->DeleteLocalRef(javaUser);
         }
     }
 
@@ -1400,7 +1520,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
 
     const jsize  buf1_size = env->GetArrayLength(buf1);
     jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
-    if (buf1_size <= 0 || buf1_p == NULL)
+    if (buf1_size <= 0 || buf1_p == NULL || env->ExceptionCheck())
     {
         server2->Release();
 
@@ -1413,7 +1533,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
     {
         buf2_size = env->GetArrayLength(buf2);
         buf2_p    = env->GetByteArrayElements(buf2, NULL);
-        if (buf2_size <= 0 || buf2_p == NULL)
+        if (buf2_size <= 0 || buf2_p == NULL || env->ExceptionCheck())
         {
             env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
             server2->Release();

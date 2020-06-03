@@ -19,6 +19,7 @@
 #if !defined(MSG_CLIENT_JNI_H)
 #define MSG_CLIENT_JNI_H
 
+#include "pronet/pro_memory_pool.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
 #include "../pro_msg/msg_client.h"
@@ -81,6 +82,8 @@ private:
     const jmethodID m_onRecvMsg;
     const jmethodID m_onCloseMsg;
     const jmethodID m_onHeartbeatMsg;
+
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

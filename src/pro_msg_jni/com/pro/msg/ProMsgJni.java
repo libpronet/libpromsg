@@ -21,7 +21,7 @@ package com.pro.msg;
 /*
  * please refer to "libpronet/pub/inc/pronet/rtp_msg.h"
  *
- * the file's version is [1.9.1]
+ * the file's version is [1.9.4]
  */
 public class ProMsgJni
 {
@@ -55,7 +55,7 @@ public class ProMsgJni
 	    /*
 	     * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
 		 */
-        public void msgClientOnOk(
+        void msgClientOnOk(
             long         msgClient,
             PRO_MSG_USER myUser,
             String       myPublicIp
@@ -64,7 +64,7 @@ public class ProMsgJni
         /*
 		 * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
 		 */
-        public void msgClientOnRecv(
+        void msgClientOnRecv(
             long         msgClient,
             byte[]       buf,
             int          charset,
@@ -74,7 +74,7 @@ public class ProMsgJni
         /*
 		 * signature: (JIIZ)V
 		 */
-        public void msgClientOnClose(
+        void msgClientOnClose(
             long    msgClient,
             int     errorCode,
             int     sslCode,
@@ -84,7 +84,7 @@ public class ProMsgJni
         /*
 		 * signature: (JJ)V
 		 */
-        public void msgClientOnHeartbeat(
+        void msgClientOnHeartbeat(
             long msgClient,
             long peerAliveTick
             );
@@ -95,7 +95,7 @@ public class ProMsgJni
 	    /*
 		 * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
 		 */
-        public void msgServerOnOkUser(
+        void msgServerOnOkUser(
             long         msgServer,
             PRO_MSG_USER user,
             String       userPublicIp
@@ -104,7 +104,7 @@ public class ProMsgJni
         /*
 		 * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V
 		 */
-        public void msgServerOnCloseUser(
+        void msgServerOnCloseUser(
             long         msgServer,
             PRO_MSG_USER user,
             int          errorCode,
@@ -114,7 +114,7 @@ public class ProMsgJni
          /*
 		  * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;J)V
 		  */
-        public void msgServerOnHeartbeatUser(
+        void msgServerOnHeartbeatUser(
             long         msgServer,
             PRO_MSG_USER user,
 			long         peerAliveTick
@@ -123,7 +123,7 @@ public class ProMsgJni
         /*
 		 * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
 		 */
-        public void msgServerOnRecvMsg(
+        void msgServerOnRecvMsg(
             long         msgServer,
             byte[]       buf,
             int          charset,
@@ -132,9 +132,9 @@ public class ProMsgJni
     }
 
     public static native void getCoreVersion(
-        short[] major_1, /* = null */
-        short[] minor_1, /* = null */
-        short[] patch_1  /* = null */
+        short[] major_1,
+        short[] minor_1,
+        short[] patch_1
         );
 
     public static native boolean init(long threadCount); /* 1 ~ (2/20) ~ 100 */
