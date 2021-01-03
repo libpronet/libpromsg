@@ -248,7 +248,7 @@ public class ProMsgJni
     public static native long msgServerGetSendingBytes(
         long         server,
         PRO_MSG_USER user
-    );
+        );
 
     static
     {
