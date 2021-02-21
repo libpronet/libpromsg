@@ -46,7 +46,7 @@ JniUtilDetach();
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* JNI_UTIL_H */

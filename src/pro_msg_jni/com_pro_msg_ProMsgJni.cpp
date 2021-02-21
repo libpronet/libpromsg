@@ -1678,5 +1678,5 @@ Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes(JNIEnv* env,
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif

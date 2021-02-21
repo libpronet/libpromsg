@@ -16,5 +16,5 @@ libpro_msg_a_SOURCES = ../../../../src/pro_msg/msg_client.cpp      \
 
 libpro_msg_a_CPPFLAGS = -I/usr/local/libpronet/include
 
-libpro_msg_a_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
-libpro_msg_a_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
+libpro_msg_a_CFLAGS   = -fPIC
+libpro_msg_a_CXXFLAGS = -fPIC

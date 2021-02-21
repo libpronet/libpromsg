@@ -139,49 +139,49 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug\</OutDir>
+    <OutDir>$(SolutionDir)_debug32\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug32-md\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug64x\</OutDir>
+    <OutDir>$(SolutionDir)_debug64\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug64-md\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release\</OutDir>
+    <OutDir>$(SolutionDir)_release32\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release-md\</OutDir>
+    <OutDir>$(SolutionDir)_release32-md\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release64x\</OutDir>
+    <OutDir>$(SolutionDir)_release64\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_release64-md\</OutDir>
     <TargetName>pro_msg_jni</TargetName>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
@@ -200,7 +200,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>../../../../libpronet/pub/lib-d/windows-vs2010/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mbedtls_s-mt.lib;pro_shared.lib;pro_util_s-mt.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mbedtls_s.lib;pro_shared.lib;pro_util_s.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
@@ -236,7 +236,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>../../../../libpronet/pub/lib-d/windows-vs2010/x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mbedtls_s-mt.lib;pro_shared.lib;pro_util_s-mt.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mbedtls_s.lib;pro_shared.lib;pro_util_s.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -276,7 +276,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>../../../../libpronet/pub/lib-r/windows-vs2010/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mbedtls_s-mt.lib;pro_shared.lib;pro_util_s-mt.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mbedtls_s.lib;pro_shared.lib;pro_util_s.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -320,7 +320,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
       <AdditionalLibraryDirectories>../../../../libpronet/pub/lib-r/windows-vs2010/x86_64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mbedtls_s-mt.lib;pro_shared.lib;pro_util_s-mt.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>mbedtls_s.lib;pro_shared.lib;pro_util_s.lib;pro_net.lib;pro_rtp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">

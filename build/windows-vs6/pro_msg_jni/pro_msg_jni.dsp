@@ -38,7 +38,7 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../_release"
+# PROP Output_Dir "../_release32"
 # PROP Intermediate_Dir "Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mbedtls_s-mt.lib pro_shared.lib pro_util_s-mt.lib pro_net.lib pro_rtp.lib /nologo /dll /map:"../_release/pro_msg_jni.map" /debug /machine:I386 /pdbtype:con /libpath:"../../../../libpronet/pub/lib-r/windows-vs6/x86" /mapinfo:lines
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mbedtls_s.lib pro_shared.lib pro_util_s.lib pro_net.lib pro_rtp.lib /nologo /dll /map:"../_release32/pro_msg_jni.map" /debug /machine:I386 /pdbtype:con /libpath:"../../../../libpronet/pub/lib-r/windows-vs6/x86" /mapinfo:lines
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "pro_msg_jni - Win32 Debug"
@@ -66,7 +66,7 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../_debug"
+# PROP Output_Dir "../_debug32"
 # PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mbedtls_s-mt.lib pro_shared.lib pro_util_s-mt.lib pro_net.lib pro_rtp.lib /nologo /dll /map:"../_debug/pro_msg_jni.map" /debug /machine:I386 /pdbtype:con /libpath:"../../../../libpronet/pub/lib-d/windows-vs6/x86" /mapinfo:lines
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib mbedtls_s.lib pro_shared.lib pro_util_s.lib pro_net.lib pro_rtp.lib /nologo /dll /map:"../_debug32/pro_msg_jni.map" /debug /machine:I386 /pdbtype:con /libpath:"../../../../libpronet/pub/lib-d/windows-vs6/x86" /mapinfo:lines
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

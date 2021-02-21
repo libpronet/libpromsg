@@ -16,8 +16,8 @@ libpro_msg_jni_so_CPPFLAGS = -I/usr/local/libpronet/include \
                              -I"${JAVA_HOME}/include"       \
                              -I"${JAVA_HOME}/include/linux"
 
-libpro_msg_jni_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
-libpro_msg_jni_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
+libpro_msg_jni_so_CFLAGS   = -fPIC
+libpro_msg_jni_so_CXXFLAGS = -fPIC
 
 libpro_msg_jni_so_LDFLAGS = -shared -Wl,-soname,libpro_msg_jni.so \
                             -Wl,-rpath,.:/usr/local/libpronet/lib \

@@ -21,7 +21,7 @@ package com.pro.msg;
 /*
  * please refer to "libpronet/pub/inc/pronet/rtp_msg.h"
  *
- * the file's version is [1.9.4]
+ * the file's version is [2.0.0]
  */
 public class ProMsgJni
 {
@@ -52,9 +52,9 @@ public class ProMsgJni
 
     public interface MsgClientListener
     {
-	    /*
-	     * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
-		 */
+        /*
+         * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
+         */
         void msgClientOnOk(
             long         msgClient,
             PRO_MSG_USER myUser,
@@ -62,8 +62,8 @@ public class ProMsgJni
             );
 
         /*
-		 * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
-		 */
+         * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
+         */
         void msgClientOnRecv(
             long         msgClient,
             byte[]       buf,
@@ -72,8 +72,8 @@ public class ProMsgJni
             );
 
         /*
-		 * signature: (JIIZ)V
-		 */
+         * signature: (JIIZ)V
+         */
         void msgClientOnClose(
             long    msgClient,
             int     errorCode,
@@ -82,8 +82,8 @@ public class ProMsgJni
             );
 
         /*
-		 * signature: (JJ)V
-		 */
+         * signature: (JJ)V
+         */
         void msgClientOnHeartbeat(
             long msgClient,
             long peerAliveTick
@@ -92,9 +92,9 @@ public class ProMsgJni
 
     public interface MsgServerListener
     {
-	    /*
-		 * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
-		 */
+        /*
+         * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V
+         */
         void msgServerOnOkUser(
             long         msgServer,
             PRO_MSG_USER user,
@@ -102,8 +102,8 @@ public class ProMsgJni
             );
 
         /*
-		 * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V
-		 */
+         * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;II)V
+         */
         void msgServerOnCloseUser(
             long         msgServer,
             PRO_MSG_USER user,
@@ -111,18 +111,18 @@ public class ProMsgJni
             int          sslCode
             );
 
-         /*
-		  * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;J)V
-		  */
+        /*
+         * signature: (JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;J)V
+         */
         void msgServerOnHeartbeatUser(
             long         msgServer,
             PRO_MSG_USER user,
-			long         peerAliveTick
+            long         peerAliveTick
             );
 
         /*
-		 * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
-		 */
+         * signature: (J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V
+         */
         void msgServerOnRecvMsg(
             long         msgServer,
             byte[]       buf,

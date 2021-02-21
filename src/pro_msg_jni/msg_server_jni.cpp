@@ -47,7 +47,7 @@ NewJavaUser_i(JNIEnv*             env,
               const RTP_MSG_USER& user);
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
