@@ -695,7 +695,7 @@ CMsgClient::Reconnect()
             return (false);
         }
 
-        m_reconnector->Reconnect();
+        m_reconnector->Reconnect(m_msgConfigInfo.msgc_reconnect_interval);
     }
 
     return (true);
@@ -709,7 +709,7 @@ CMsgClient::Reconnect_i()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL)
+        if (m_reactor == NULL || m_reconnector == NULL)
         {
             return;
         }
@@ -729,6 +729,8 @@ CMsgClient::Reconnect_i()
             );
         if (msgClient == NULL)
         {
+            m_reconnector->Reconnect(m_msgConfigInfo.msgc_reconnect_interval);
+
             return;
         }
 

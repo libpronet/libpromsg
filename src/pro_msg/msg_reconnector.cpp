@@ -124,8 +124,13 @@ CMsgReconnector::Release()
 }
 
 void
-CMsgReconnector::Reconnect()
+CMsgReconnector::Reconnect(unsigned long intervalInSeconds)
 {
+    if (intervalInSeconds == 0)
+    {
+        intervalInSeconds = 1;
+    }
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -137,8 +142,7 @@ CMsgReconnector::Reconnect()
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        PRO_INT64 tickInterval =
-            m_client->m_msgConfigInfo.msgc_reconnect_interval;
+        PRO_INT64 tickInterval = intervalInSeconds;
         tickInterval *= 1000;
 
         PRO_INT64 tickDelay =

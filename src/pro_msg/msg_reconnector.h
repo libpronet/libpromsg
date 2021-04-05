@@ -50,7 +50,7 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    void Reconnect();
+    void Reconnect(unsigned long intervalInSeconds);
 
 private:
 
