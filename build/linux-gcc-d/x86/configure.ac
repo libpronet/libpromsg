@@ -20,6 +20,7 @@ AC_PROG_RANLIB
 
 # Checks for library functions.
 
+AM_CONDITIONAL([BUILD_JNI_SO], [test "x${JAVA_HOME}" != "x"])
 AC_CONFIG_FILES([Makefile
                  pro_msg/Makefile
                  pro_msg_jni/Makefile
