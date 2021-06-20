@@ -36,6 +36,8 @@ class IMsgClientObserver
 {
 public:
 
+    virtual ~IMsgClientObserver() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
