@@ -36,7 +36,6 @@
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
              MSG_CLIENT_CONFIG_INFO&         configInfo)
 {
@@ -471,7 +470,6 @@ CMsgClient::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgClient::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -480,7 +478,6 @@ CMsgClient::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgClient::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -744,7 +741,6 @@ CMsgClient::Reconnect_i()
 }
 
 void
-PRO_CALLTYPE
 CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
                     const RTP_MSG_USER* myUser,
                     const char*         myPublicIp)
@@ -800,7 +796,6 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
                       unsigned long       size,
@@ -860,7 +855,6 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
                        long           errorCode,
                        long           sslCode,

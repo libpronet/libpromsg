@@ -106,7 +106,6 @@ CMsgReconnector::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgReconnector::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -115,7 +114,6 @@ CMsgReconnector::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgReconnector::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -157,7 +155,6 @@ CMsgReconnector::Reconnect(unsigned long intervalInSeconds)
 }
 
 void
-PRO_CALLTYPE
 CMsgReconnector::OnTimer(void*      factory,
                          PRO_UINT64 timerId,
                          PRO_INT64  userData)

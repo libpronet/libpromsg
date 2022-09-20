@@ -49,7 +49,7 @@ private:
 
     virtual ~CMsgServerJni();
 
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
@@ -57,20 +57,20 @@ private:
         PRO_INT64           appData
         );
 
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         long                errorCode,
         long                sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick
         );
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,

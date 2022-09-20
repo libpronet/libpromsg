@@ -36,13 +36,11 @@ extern "C" {
 
 extern
 jstring
-PRO_CALLTYPE
 NewJavaString_i(JNIEnv*     env,
                 const char* utf8String);
 
 extern
 jobject
-PRO_CALLTYPE
 NewJavaUser_i(JNIEnv*             env,
               const RTP_MSG_USER& user);
 
@@ -142,7 +140,6 @@ CMsgServerJni::~CMsgServerJni()
 }
 
 void
-PRO_CALLTYPE
 CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
@@ -209,7 +206,6 @@ CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServerJni::OnCloseUser(IRtpMsgServer*      msgServer,
                            const RTP_MSG_USER* user,
                            long                errorCode,
@@ -263,7 +259,6 @@ CMsgServerJni::OnCloseUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServerJni::OnHeartbeatUser(IRtpMsgServer*      msgServer,
                                const RTP_MSG_USER* user,
                                PRO_INT64           peerAliveTick)
@@ -315,7 +310,6 @@ CMsgServerJni::OnHeartbeatUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServerJni::OnRecvMsg(IRtpMsgServer*      msgServer,
                          const void*         buf,
                          unsigned long       size,

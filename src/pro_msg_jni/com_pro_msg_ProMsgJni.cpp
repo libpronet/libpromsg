@@ -69,7 +69,6 @@ static CProThreadMutex       g_s_lock;
 
 /* static */
 jstring
-PRO_CALLTYPE
 NewJavaString_i(JNIEnv*     env,
                 const char* utf8String)
 {
@@ -89,7 +88,6 @@ NewJavaString_i(JNIEnv*     env,
 
 /* static */
 jobject
-PRO_CALLTYPE
 NewJavaUser_i(JNIEnv*             env,
               const RTP_MSG_USER& user)
 {
@@ -126,7 +124,6 @@ NewJavaUser_i(JNIEnv*             env,
 
 static
 void
-PRO_CALLTYPE
 MSG_USER_java2cpp_i(JNIEnv*       env,
                     jobject       javaUser,
                     RTP_MSG_USER& cppUser)
@@ -163,7 +160,6 @@ MSG_USER_java2cpp_i(JNIEnv*       env,
 
 static
 void
-PRO_CALLTYPE
 MSG_USER_cpp2java_i(JNIEnv*             env,
                     const RTP_MSG_USER& cppUser,
                     jobject             javaUser)

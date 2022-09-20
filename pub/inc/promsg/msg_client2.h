@@ -38,17 +38,17 @@ public:
 
     virtual ~IMsgClientObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
-    virtual void PRO_CALLTYPE OnOkMsg(
+    virtual void OnOkMsg(
         CMsgClient2*        msgClient,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
         ) = 0;
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         CMsgClient2*        msgClient,
         const void*         buf,
         unsigned long       size,
@@ -56,14 +56,14 @@ public:
         const RTP_MSG_USER* srcUser
         ) = 0;
 
-    virtual void PRO_CALLTYPE OnCloseMsg(
+    virtual void OnCloseMsg(
         CMsgClient2* msgClient,
         long         errorCode,
         long         sslCode,
         bool         tcpConnected
         ) = 0;
 
-    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+    virtual void OnHeartbeatMsg(
         CMsgClient2* msgClient,
         PRO_INT64    peerAliveTick
         ) = 0;
@@ -98,13 +98,13 @@ private:
 
     virtual ~CMsgClient2();
 
-    virtual void PRO_CALLTYPE OnOkMsg(
+    virtual void OnOkMsg(
         IRtpMsgClient*      msgClient,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
         );
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
@@ -112,14 +112,14 @@ private:
         const RTP_MSG_USER* srcUser
         );
 
-    virtual void PRO_CALLTYPE OnCloseMsg(
+    virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
         long           errorCode,
         long           sslCode,
         bool           tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+    virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
         PRO_INT64      peerAliveTick
         );

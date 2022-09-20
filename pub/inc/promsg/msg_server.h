@@ -112,9 +112,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     RTP_MM_TYPE GetMmType() const;
 
@@ -159,7 +159,7 @@ protected:
 
     virtual ~CMsgServer();
 
-    virtual bool PRO_CALLTYPE OnCheckUser(
+    virtual bool OnCheckUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
@@ -172,7 +172,7 @@ protected:
         bool*               isC2s
         );
 
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
@@ -180,20 +180,20 @@ protected:
         PRO_INT64           appData
         );
 
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         long                errorCode,
         long                sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick
         );
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,

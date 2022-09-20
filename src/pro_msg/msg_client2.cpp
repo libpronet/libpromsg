@@ -109,7 +109,6 @@ CMsgClient2::Fini()
 }
 
 void
-PRO_CALLTYPE
 CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
                      const RTP_MSG_USER* myUser,
                      const char*         myPublicIp)
@@ -173,7 +172,6 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
                        const void*         buf,
                        unsigned long       size,
@@ -241,7 +239,6 @@ CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
                         long           errorCode,
                         long           sslCode,
@@ -303,7 +300,6 @@ CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
 }
 
 void
-PRO_CALLTYPE
 CMsgClient2::OnHeartbeatMsg(IRtpMsgClient* msgClient,
                             PRO_INT64      peerAliveTick)
 {

@@ -30,16 +30,13 @@ extern "C" {
 ////
 
 void
-PRO_CALLTYPE
 JniUtilOnLoad(JavaVM* jvm,
               jint    jdkVer);
 
 JNIEnv*
-PRO_CALLTYPE
 JniUtilAttach();
 
 void
-PRO_CALLTYPE
 JniUtilDetach();
 
 /////////////////////////////////////////////////////////////////////////////

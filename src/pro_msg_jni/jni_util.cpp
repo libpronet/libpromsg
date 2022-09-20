@@ -72,7 +72,6 @@ JniUtilCleanup_i(void*)
 ////
 
 void
-PRO_CALLTYPE
 JniUtilOnLoad(JavaVM* jvm,
               jint    jdkVer)
 {
@@ -94,7 +93,6 @@ JniUtilOnLoad(JavaVM* jvm,
 }
 
 JNIEnv*
-PRO_CALLTYPE
 JniUtilAttach()
 {
     if (g_s_jvm == NULL)
@@ -141,7 +139,6 @@ JniUtilAttach()
 }
 
 void
-PRO_CALLTYPE
 JniUtilDetach()
 {
     if (g_s_jvm == NULL)

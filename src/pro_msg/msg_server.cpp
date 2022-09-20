@@ -33,7 +33,6 @@
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
              MSG_SERVER_CONFIG_INFO&         configInfo)
 {
@@ -422,7 +421,6 @@ CMsgServer::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgServer::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -431,7 +429,6 @@ CMsgServer::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgServer::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -609,7 +606,6 @@ CMsgServer::GetSendingBytes(const RTP_MSG_USER& user) const
 }
 
 bool
-PRO_CALLTYPE
 CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
@@ -682,7 +678,6 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
                      const RTP_MSG_USER* user,
                      const char*         userPublicIp,
@@ -719,7 +714,6 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         long                errorCode,
@@ -752,7 +746,6 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnHeartbeatUser(IRtpMsgServer*      msgServer,
                             const RTP_MSG_USER* user,
                             PRO_INT64           peerAliveTick)
@@ -784,7 +777,6 @@ CMsgServer::OnHeartbeatUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnRecvMsg(IRtpMsgServer*      msgServer,
                       const void*         buf,
                       unsigned long       size,
