@@ -20,7 +20,7 @@
 #include "pronet/pro_a.h"
 #include "pronet/pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -38,7 +38,7 @@ extern "C" {
 
 static JavaVM*       g_s_jvm = NULL;
 static jint          g_s_ver = 0;
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 static unsigned long g_s_key = (unsigned long)-1;
 #else
 static pthread_key_t g_s_key = (pthread_key_t)-1;
@@ -85,7 +85,7 @@ JniUtilOnLoad(JavaVM* jvm,
     g_s_jvm = jvm;
     g_s_ver = jdkVer;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     g_s_key = ::TlsAlloc();
 #else
     pthread_key_create(&g_s_key, &JniUtilCleanup_i);
@@ -109,7 +109,7 @@ JniUtilAttach()
         return (env);
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     env = (JNIEnv*)::TlsGetValue(g_s_key);
 #else
     env = (JNIEnv*)pthread_getspecific(g_s_key);
@@ -129,7 +129,7 @@ JniUtilAttach()
         return (NULL);
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     ::TlsSetValue(g_s_key, env);
 #else
     pthread_setspecific(g_s_key, env);
@@ -148,7 +148,7 @@ JniUtilDetach()
 
     JNIEnv* env = NULL;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     env = (JNIEnv*)::TlsGetValue(g_s_key);
 #else
     env = (JNIEnv*)pthread_getspecific(g_s_key);
@@ -160,7 +160,7 @@ JniUtilDetach()
 
     g_s_jvm->DetachCurrentThread();
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     ::TlsSetValue(g_s_key, NULL);
 #else
     pthread_setspecific(g_s_key, NULL);
