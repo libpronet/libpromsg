@@ -24,7 +24,6 @@
 #include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -147,18 +146,18 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient2::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " CMsgClient2::OnOkMsg(id : %u-%llu-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser->classId,
-            myUser->UserId(),
+            (unsigned long long)myUser->UserId(),
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
@@ -175,7 +174,7 @@ void
 CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
                        const void*         buf,
                        unsigned long       size,
-                       PRO_UINT16          charset,
+                       uint16_t            charset,
                        const RTP_MSG_USER* srcUser)
 {
     assert(msgClient != NULL);
@@ -213,22 +212,21 @@ CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient2::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
-            " me : %u-" PRO_PRT64U "-%u) \n"
+            " CMsgClient2::OnRecvMsg(from : %u-%llu-%u, me : %u-%llu-%u) \n"
             "\t %s \n"
             ,
             timeString.c_str(),
             (unsigned int)srcUser->classId,
-            srcUser->UserId(),
+            (unsigned long long)srcUser->UserId(),
             (unsigned int)srcUser->instId,
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             msg.c_str()
             );
@@ -274,18 +272,18 @@ CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient2::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            " CMsgClient2::OnCloseMsg(id : %u-%llu-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,
@@ -301,7 +299,7 @@ CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
 
 void
 CMsgClient2::OnHeartbeatMsg(IRtpMsgClient* msgClient,
-                            PRO_INT64      peerAliveTick)
+                            int64_t        peerAliveTick)
 {
     assert(msgClient != NULL);
     if (msgClient == NULL)

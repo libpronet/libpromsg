@@ -24,7 +24,6 @@
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
 #include "../pro_msg/msg_client.h"
-#include <cassert>
 #include <jni.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -116,7 +115,7 @@ CMsgClientJni::CMsgClientJni(jobject   listener,
                              jmethodID onRecvMsg,
                              jmethodID onCloseMsg,
                              jmethodID onHeartbeatMsg)
-                             :
+:
 m_listener(listener),
 m_onOkMsg(onOkMsg),
 m_onRecvMsg(onRecvMsg),
@@ -205,7 +204,7 @@ void
 CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
                          const void*         buf,
                          unsigned long       size,
-                         PRO_UINT16          charset,
+                         uint16_t            charset,
                          const RTP_MSG_USER* srcUser)
 {
     assert(msgClient != NULL);
@@ -321,7 +320,7 @@ CMsgClientJni::OnCloseMsg(IRtpMsgClient* msgClient,
 
 void
 CMsgClientJni::OnHeartbeatMsg(IRtpMsgClient* msgClient,
-                              PRO_INT64      peerAliveTick)
+                              int64_t        peerAliveTick)
 {
     assert(msgClient != NULL);
     if (msgClient == NULL)

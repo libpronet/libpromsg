@@ -29,7 +29,6 @@
 #include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -180,7 +179,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -220,8 +219,7 @@ CMsgClient::Init(IProReactor*        reactor,
     assert(reactor != NULL);
     assert(configFileName != NULL);
     assert(configFileName[0] != '\0');
-    if (reactor == NULL ||
-        configFileName == NULL || configFileName[0] == '\0')
+    if (reactor == NULL || configFileName == NULL || configFileName[0] == '\0')
     {
         return (false);
     }
@@ -230,8 +228,7 @@ CMsgClient::Init(IProReactor*        reactor,
     ProGetExeDir_(exeRoot);
 
     CProStlString configFileName2 = configFileName;
-    if (configFileName2[0] == '.' ||
-        configFileName2.find_first_of("\\/") == CProStlString::npos)
+    if (configFileName2[0] == '.' || configFileName2.find_first_of("\\/") == CProStlString::npos)
     {
         CProStlString fileName = exeRoot;
         fileName += configFileName2;
@@ -282,9 +279,8 @@ CMsgClient::Init(IProReactor*        reactor,
      * DNS, for reconnecting
      */
     {
-        const PRO_UINT32 serverIp2 =
-            pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
-        if (serverIp2 == (PRO_UINT32)-1 || serverIp2 == 0)
+        const PRO_UINT32 serverIp2 = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        if (serverIp2 == (uint32_t)-1 || serverIp2 == 0)
         {
             return (false);
         }
@@ -361,8 +357,7 @@ CMsgClient::Init(IProReactor*        reactor,
                     goto EXIT;
                 }
 
-                ProSslClientConfig_EnableSha1Cert(
-                    sslConfig, configInfo.msgc_ssl_enable_sha1cert);
+                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.msgc_ssl_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     sslConfig,
@@ -593,23 +588,20 @@ CMsgClient::GetRemotePort() const
 
 bool
 CMsgClient::SendMsg(const void*         buf,
-                    unsigned long       size,
-                    PRO_UINT16          charset,
+                    size_t              size,
+                    uint16_t            charset,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    const bool ret = SendMsg2(
-        buf, size, NULL, 0, charset, dstUsers, dstUserCount);
-
-    return (ret);
+    return SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
 }
 
 bool
 CMsgClient::SendMsg2(const void*         buf1,
-                     unsigned long       size1,
+                     size_t              size1,
                      const void*         buf2,  /* = NULL */
-                     unsigned long       size2, /* = 0 */
-                     PRO_UINT16          charset,
+                     size_t              size2, /* = 0 */
+                     uint16_t            charset,
                      const RTP_MSG_USER* dstUsers,
                      unsigned char       dstUserCount)
 {
@@ -635,7 +627,7 @@ CMsgClient::SendMsg2(const void*         buf1,
 }
 
 void
-CMsgClient::SetOutputRedline(unsigned long redlineBytes)
+CMsgClient::SetOutputRedline(size_t redlineBytes)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -646,14 +638,14 @@ CMsgClient::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgClient->SetOutputRedline(redlineBytes);
-        m_msgConfigInfo.msgc_redline_bytes = m_msgClient->GetOutputRedline();
+        m_msgConfigInfo.msgc_redline_bytes = (unsigned int)m_msgClient->GetOutputRedline();
     }
 }
 
-unsigned long
+size_t
 CMsgClient::GetOutputRedline() const
 {
-    unsigned long redlineBytes = 0;
+    size_t redlineBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -661,13 +653,13 @@ CMsgClient::GetOutputRedline() const
         redlineBytes = m_msgConfigInfo.msgc_redline_bytes;
     }
 
-    return (redlineBytes);
+    return redlineBytes;
 }
 
-unsigned long
+size_t
 CMsgClient::GetSendingBytes() const
 {
-    unsigned long sendingBytes = 0;
+    size_t sendingBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -678,7 +670,7 @@ CMsgClient::GetSendingBytes() const
         }
     }
 
-    return (sendingBytes);
+    return sendingBytes;
 }
 
 bool
@@ -774,18 +766,18 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " CMsgClient::OnOkMsg(id : %u-%llu-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser->classId,
-            myUser->UserId(),
+            (unsigned long long)myUser->UserId(),
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
@@ -799,7 +791,7 @@ void
 CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
                       unsigned long       size,
-                      PRO_UINT16          charset,
+                      uint16_t            charset,
                       const RTP_MSG_USER* srcUser)
 {
     assert(msgClient != NULL);
@@ -832,22 +824,21 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
-            " me : %u-" PRO_PRT64U "-%u) \n"
+            " CMsgClient::OnRecvMsg(from : %u-%llu-%u, me : %u-%llu-%u) \n"
             "\t %s \n"
             ,
             timeString.c_str(),
             (unsigned int)srcUser->classId,
-            srcUser->UserId(),
+            (unsigned long long)srcUser->UserId(),
             (unsigned int)srcUser->instId,
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             msg.c_str()
             );
@@ -885,18 +876,18 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CMsgClient::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            " CMsgClient::OnCloseMsg(id : %u-%llu-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,

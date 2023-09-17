@@ -54,7 +54,7 @@ private:
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
         const RTP_MSG_USER* c2sUser, /* = NULL */
-        PRO_INT64           appData
+        int64_t             appData
         );
 
     virtual void OnCloseUser(
@@ -67,14 +67,14 @@ private:
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         );
 
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 

@@ -26,7 +26,6 @@
 #include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -198,7 +197,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -482,10 +481,10 @@ CMsgServer::GetSslSuite(const RTP_MSG_USER& user,
     return (suiteName);
 }
 
-unsigned long
+size_t
 CMsgServer::GetUserCount() const
 {
-    unsigned long baseUserCount = 0;
+    size_t baseUserCount = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -496,7 +495,7 @@ CMsgServer::GetUserCount() const
         }
     }
 
-    return (baseUserCount);
+    return baseUserCount;
 }
 
 void
@@ -516,23 +515,20 @@ CMsgServer::KickoutUser(const RTP_MSG_USER& user)
 
 bool
 CMsgServer::SendMsg(const void*         buf,
-                    unsigned long       size,
-                    PRO_UINT16          charset,
+                    size_t              size,
+                    uint16_t            charset,
                     const RTP_MSG_USER* dstUsers,
                     unsigned char       dstUserCount)
 {
-    const bool ret = SendMsg2(
-        buf, size, NULL, 0, charset, dstUsers, dstUserCount);
-
-    return (ret);
+    return SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
 }
 
 bool
 CMsgServer::SendMsg2(const void*         buf1,
-                     unsigned long       size1,
+                     size_t              size1,
                      const void*         buf2,  /* = NULL */
-                     unsigned long       size2, /* = 0 */
-                     PRO_UINT16          charset,
+                     size_t              size2, /* = 0 */
+                     uint16_t            charset,
                      const RTP_MSG_USER* dstUsers,
                      unsigned char       dstUserCount)
 {
@@ -558,7 +554,7 @@ CMsgServer::SendMsg2(const void*         buf1,
 }
 
 void
-CMsgServer::SetOutputRedline(unsigned long redlineBytes)
+CMsgServer::SetOutputRedline(size_t redlineBytes)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -569,15 +565,14 @@ CMsgServer::SetOutputRedline(unsigned long redlineBytes)
         }
 
         m_msgServer->SetOutputRedlineToUsr(redlineBytes);
-        m_msgConfigInfo.msgs_redline_bytes =
-            m_msgServer->GetOutputRedlineToUsr();
+        m_msgConfigInfo.msgs_redline_bytes = (unsigned int)m_msgServer->GetOutputRedlineToUsr();
     }
 }
 
-unsigned long
+size_t
 CMsgServer::GetOutputRedline() const
 {
-    unsigned long redlineBytes = 0;
+    size_t redlineBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -585,13 +580,13 @@ CMsgServer::GetOutputRedline() const
         redlineBytes = m_msgConfigInfo.msgs_redline_bytes;
     }
 
-    return (redlineBytes);
+    return redlineBytes;
 }
 
-unsigned long
+size_t
 CMsgServer::GetSendingBytes(const RTP_MSG_USER& user) const
 {
-    unsigned long sendingBytes = 0;
+    size_t sendingBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -602,7 +597,7 @@ CMsgServer::GetSendingBytes(const RTP_MSG_USER& user) const
         }
     }
 
-    return (sendingBytes);
+    return sendingBytes;
 }
 
 bool
@@ -612,9 +607,9 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
                         const char          hash[32],
                         const char          nonce[32],
-                        PRO_UINT64*         userId,
-                        PRO_UINT16*         instId,
-                        PRO_INT64*          appData,
+                        uint64_t*           userId,
+                        uint16_t*           instId,
+                        int64_t*            appData,
                         bool*               isC2s)
 {
     assert(msgServer != NULL);
@@ -682,7 +677,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
                      const RTP_MSG_USER* user,
                      const char*         userPublicIp,
                      const RTP_MSG_USER* c2sUser, /* = NULL */
-                     PRO_INT64           appData)
+                     int64_t             appData)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -748,7 +743,7 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
 void
 CMsgServer::OnHeartbeatUser(IRtpMsgServer*      msgServer,
                             const RTP_MSG_USER* user,
-                            PRO_INT64           peerAliveTick)
+                            int64_t             peerAliveTick)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -780,7 +775,7 @@ void
 CMsgServer::OnRecvMsg(IRtpMsgServer*      msgServer,
                       const void*         buf,
                       unsigned long       size,
-                      PRO_UINT16          charset,
+                      uint16_t            charset,
                       const RTP_MSG_USER* srcUser)
 {
     assert(msgServer != NULL);

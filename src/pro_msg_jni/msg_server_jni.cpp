@@ -24,7 +24,6 @@
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
 #include "../pro_msg/msg_server.h"
-#include <cassert>
 #include <jni.h>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -118,7 +117,7 @@ CMsgServerJni::CMsgServerJni(jobject   listener,
                              jmethodID onCloseUser,
                              jmethodID onHeartbeatUser,
                              jmethodID onRecvMsg)
-                             :
+:
 m_listener(listener),
 m_onOkUser(onOkUser),
 m_onCloseUser(onCloseUser),
@@ -144,7 +143,7 @@ CMsgServerJni::OnOkUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
-                        PRO_INT64           appData)
+                        int64_t             appData)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -261,7 +260,7 @@ CMsgServerJni::OnCloseUser(IRtpMsgServer*      msgServer,
 void
 CMsgServerJni::OnHeartbeatUser(IRtpMsgServer*      msgServer,
                                const RTP_MSG_USER* user,
-                               PRO_INT64           peerAliveTick)
+                               int64_t             peerAliveTick)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -313,7 +312,7 @@ void
 CMsgServerJni::OnRecvMsg(IRtpMsgServer*      msgServer,
                          const void*         buf,
                          unsigned long       size,
-                         PRO_UINT16          charset,
+                         uint16_t            charset,
                          const RTP_MSG_USER* srcUser)
 {
     assert(msgServer != NULL);

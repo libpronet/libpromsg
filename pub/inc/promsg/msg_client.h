@@ -24,6 +24,7 @@
 #include "pronet/pro_ssl_util.h"
 #include "pronet/pro_stl.h"
 #include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
 
@@ -47,12 +48,11 @@ struct MSG_CLIENT_CONFIG_INFO
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
-        msgc_ssl_sni             = "server.libpro.org";
         msgc_ssl_aes256          = false;
 
         RtpMsgString2User("2-0-0", &msgc_id);
 
-        msgc_ssl_cafiles.push_back("./ca.crt");
+        msgc_ssl_cafiles.push_back("ca.crt");
         msgc_ssl_cafiles.push_back("");
         msgc_ssl_crlfiles.push_back("");
         msgc_ssl_crlfiles.push_back("");
@@ -131,27 +131,27 @@ public:
 
     bool SendMsg(
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
     bool SendMsg2(
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,  /* = NULL */
-        unsigned long       size2, /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2, /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
-    void SetOutputRedline(unsigned long redlineBytes);
+    void SetOutputRedline(size_t redlineBytes);
 
-    unsigned long GetOutputRedline() const;
+    size_t GetOutputRedline() const;
 
-    unsigned long GetSendingBytes() const;
+    size_t GetSendingBytes() const;
 
     bool Reconnect();
 
@@ -171,7 +171,7 @@ protected:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
@@ -184,7 +184,7 @@ protected:
 
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
-        PRO_INT64      peerAliveTick
+        int64_t        peerAliveTick
         )
     {
     }

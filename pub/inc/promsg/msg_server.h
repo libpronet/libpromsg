@@ -24,6 +24,7 @@
 #include "pronet/pro_ssl_util.h"
 #include "pronet/pro_stl.h"
 #include "pronet/pro_thread_mutex.h"
+#include "pronet/pro_z.h"
 #include "pronet/rtp_base.h"
 #include "pronet/rtp_msg.h"
 
@@ -45,13 +46,13 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
         msgs_ssl_enable_sha1cert = true;
-        msgs_ssl_keyfile         = "./server.key";
+        msgs_ssl_keyfile         = "server.key";
 
-        msgs_ssl_cafiles.push_back("./ca.crt");
+        msgs_ssl_cafiles.push_back("ca.crt");
         msgs_ssl_cafiles.push_back("");
         msgs_ssl_crlfiles.push_back("");
         msgs_ssl_crlfiles.push_back("");
-        msgs_ssl_certfiles.push_back("./server.crt");
+        msgs_ssl_certfiles.push_back("server.crt");
         msgs_ssl_certfiles.push_back("");
     }
 
@@ -125,33 +126,33 @@ public:
         char                suiteName[64]
         ) const;
 
-    unsigned long GetUserCount() const;
+    size_t GetUserCount() const;
 
     void KickoutUser(const RTP_MSG_USER& user);
 
     bool SendMsg(
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
     bool SendMsg2(
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,  /* = NULL */
-        unsigned long       size2, /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2, /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
-    void SetOutputRedline(unsigned long redlineBytes);
+    void SetOutputRedline(size_t redlineBytes);
 
-    unsigned long GetOutputRedline() const;
+    size_t GetOutputRedline() const;
 
-    unsigned long GetSendingBytes(const RTP_MSG_USER& user) const;
+    size_t GetSendingBytes(const RTP_MSG_USER& user) const;
 
 protected:
 
@@ -166,9 +167,9 @@ protected:
         const RTP_MSG_USER* c2sUser, /* = NULL */
         const char          hash[32],
         const char          nonce[32],
-        PRO_UINT64*         userId,
-        PRO_UINT16*         instId,
-        PRO_INT64*          appData,
+        uint64_t*           userId,
+        uint16_t*           instId,
+        int64_t*            appData,
         bool*               isC2s
         );
 
@@ -177,7 +178,7 @@ protected:
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
         const RTP_MSG_USER* c2sUser, /* = NULL */
-        PRO_INT64           appData
+        int64_t             appData
         );
 
     virtual void OnCloseUser(
@@ -190,14 +191,14 @@ protected:
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         );
 
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 

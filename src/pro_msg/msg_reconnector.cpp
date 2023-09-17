@@ -25,7 +25,6 @@
 #include "pronet/pro_time_util.h"
 #include "pronet/pro_timer_factory.h"
 #include "pronet/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -155,9 +154,9 @@ CMsgReconnector::Reconnect(unsigned long intervalInSeconds)
 }
 
 void
-CMsgReconnector::OnTimer(void*      factory,
-                         PRO_UINT64 timerId,
-                         PRO_INT64  userData)
+CMsgReconnector::OnTimer(void*    factory,
+                         uint64_t timerId,
+                         int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);

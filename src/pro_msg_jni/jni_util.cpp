@@ -26,7 +26,6 @@
 #include <pthread.h>
 #endif
 
-#include <cassert>
 #include <jni.h>
 
 #if defined(__cplusplus)

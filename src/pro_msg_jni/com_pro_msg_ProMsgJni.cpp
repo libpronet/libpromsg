@@ -26,7 +26,6 @@
 #include "pronet/pro_time_util.h"
 #include "pronet/pro_version.h"
 #include "pronet/pro_z.h"
-#include <cassert>
 #include <jni.h>
 
 #if defined(__cplusplus)
@@ -58,11 +57,11 @@ struct JAVA_USER_META
     DECLARE_SGI_POOL(0)
 };
 
-static IProReactor*          g_s_reactor = NULL;
-static CProStlSet<PRO_INT64> g_s_clients;
-static CProStlSet<PRO_INT64> g_s_servers;
-static JAVA_USER_META        g_s_meta;
-static CProThreadMutex       g_s_lock;
+static IProReactor*      g_s_reactor = NULL;
+static CProStlSet<jlong> g_s_clients;
+static CProStlSet<jlong> g_s_servers;
+static JAVA_USER_META    g_s_meta;
+static CProThreadMutex   g_s_lock;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -201,7 +200,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
-                                          jclass      thiz,
+                                          jclass      clazz,
                                           jshortArray major_1,
                                           jshortArray minor_1,
                                           jshortArray patch_1)
@@ -259,7 +258,7 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
-                                jclass  thiz,
+                                jclass  clazz,
                                 jlong   threadCount) /* 1 ~ (2/20) ~ 100 */
 {
     assert(threadCount > 0);
@@ -335,7 +334,7 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
     }
 
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -369,11 +368,11 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
-                                jclass  thiz)
+                                jclass  clazz)
 {
-    IProReactor*          reactor = NULL;
-    CProStlSet<PRO_INT64> clients;
-    CProStlSet<PRO_INT64> servers;
+    IProReactor*      reactor = NULL;
+    CProStlSet<jlong> clients;
+    CProStlSet<jlong> servers;
 
     {
         CProThreadMutexGuard mon(g_s_lock);
@@ -394,8 +393,8 @@ Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
         g_s_reactor = NULL;
     }
 
-    CProStlSet<PRO_INT64>::iterator itr = servers.begin();
-    CProStlSet<PRO_INT64>::iterator end = servers.end();
+    CProStlSet<jlong>::iterator itr = servers.begin();
+    CProStlSet<jlong>::iterator end = servers.end();
 
     for (; itr != end; ++itr)
     {
@@ -423,7 +422,7 @@ JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
-                                           jclass  thiz,
+                                           jclass  clazz,
                                            jobject listener,
                                            jstring configFileName,
                                            jshort  mmType,     /* = 0, 11 ~ 20 */
@@ -554,7 +553,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
             return (0);
         }
 
-        g_s_clients.insert((PRO_INT64)client);
+        g_s_clients.insert((jlong)client);
     }
 
     return ((jlong)client);
@@ -564,7 +563,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientDelete(JNIEnv* env,
-                                           jclass  thiz,
+                                           jclass  clazz,
                                            jlong   client)
 {
     if (client == 0)
@@ -597,7 +596,7 @@ JNIEXPORT
 jshort
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetMmType(JNIEnv* evn,
-                                              jclass  thiz,
+                                              jclass  clazz,
                                               jlong   client)
 {
     assert(client != 0);
@@ -633,7 +632,7 @@ JNIEXPORT
 jobject
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
-                                            jclass  thiz,
+                                            jclass  clazz,
                                             jlong   client)
 {
     assert(client != 0);
@@ -672,7 +671,7 @@ JNIEXPORT
 jstring
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
-                                                jclass  thiz,
+                                                jclass  clazz,
                                                 jlong   client)
 {
     assert(client != 0);
@@ -711,7 +710,7 @@ JNIEXPORT
 jstring
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
-                                               jclass  thiz,
+                                               jclass  clazz,
                                                jlong   client)
 {
     assert(client != 0);
@@ -750,7 +749,7 @@ JNIEXPORT
 jint
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
-                                                 jclass  thiz,
+                                                 jclass  clazz,
                                                  jlong   client)
 {
     assert(client != 0);
@@ -786,7 +785,7 @@ JNIEXPORT
 jstring
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
-                                                jclass  thiz,
+                                                jclass  clazz,
                                                 jlong   client)
 {
     assert(client != 0);
@@ -825,7 +824,7 @@ JNIEXPORT
 jint
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
-                                                  jclass  thiz,
+                                                  jclass  clazz,
                                                   jlong   client)
 {
     assert(client != 0);
@@ -861,14 +860,14 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
-                                            jclass       thiz,
+                                            jclass       clazz,
                                             jlong        client,
                                             jbyteArray   buf,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
     const jboolean ret = Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(
-        env, thiz, client, buf, NULL, charset, dstUsers);
+        env, clazz, client, buf, NULL, charset, dstUsers);
 
     return (ret);
 }
@@ -877,7 +876,7 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
-                                             jclass       thiz,
+                                             jclass       clazz,
                                              jlong        client,
                                              jbyteArray   buf1,
                                              jbyteArray   buf2,     /* = null */
@@ -984,7 +983,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientSetOutputRedline(JNIEnv* env,
-                                                     jclass  thiz,
+                                                     jclass  clazz,
                                                      jlong   client,
                                                      jlong   redlineBytes)
 {
@@ -1013,7 +1012,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSetOutputRedline(JNIEnv* env,
         client2->AddRef();
     }
 
-    client2->SetOutputRedline((unsigned long)redlineBytes);
+    client2->SetOutputRedline((size_t)redlineBytes);
     client2->Release();
 }
 
@@ -1021,13 +1020,13 @@ JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
-                                                     jclass  thiz,
+                                                     jclass  clazz,
                                                      jlong   client)
 {
     assert(client != 0);
     if (client == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -1050,14 +1049,14 @@ Java_com_pro_msg_ProMsgJni_msgClientGetOutputRedline(JNIEnv* env,
         client2->Release();
     }
 
-    return (redlineBytes);
+    return redlineBytes;
 }
 
 JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientGetSendingBytes(JNIEnv* env,
-                                                    jclass  thiz,
+                                                    jclass  clazz,
                                                     jlong   client)
 {
     assert(client != 0);
@@ -1093,7 +1092,7 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgClientReconnect(JNIEnv* env,
-                                              jclass  thiz,
+                                              jclass  clazz,
                                               jlong   client)
 {
     assert(client != 0);
@@ -1133,7 +1132,7 @@ JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
-                                           jclass  thiz,
+                                           jclass  clazz,
                                            jobject listener,
                                            jstring configFileName,
                                            jshort  mmType,         /* = 0, 11 ~ 20 */
@@ -1203,7 +1202,7 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
             return (0);
         }
 
-        g_s_servers.insert((PRO_INT64)server);
+        g_s_servers.insert((jlong)server);
     }
 
     return ((jlong)server);
@@ -1213,7 +1212,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerDelete(JNIEnv* env,
-                                           jclass  thiz,
+                                           jclass  clazz,
                                            jlong   server)
 {
     if (server == 0)
@@ -1246,7 +1245,7 @@ JNIEXPORT
 jshort
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetMmType(JNIEnv* evn,
-                                              jclass  thiz,
+                                              jclass  clazz,
                                               jlong   server)
 {
     assert(server != 0);
@@ -1282,7 +1281,7 @@ JNIEXPORT
 jint
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetServicePort(JNIEnv* env,
-                                                   jclass  thiz,
+                                                   jclass  clazz,
                                                    jlong   server)
 {
     assert(server != 0);
@@ -1318,7 +1317,7 @@ JNIEXPORT
 jstring
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetSslSuite(JNIEnv* env,
-                                                jclass  thiz,
+                                                jclass  clazz,
                                                 jlong   server,
                                                 jobject user)
 {
@@ -1362,7 +1361,7 @@ JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
-                                                 jclass  thiz,
+                                                 jclass  clazz,
                                                  jlong   server)
 {
     assert(server != 0);
@@ -1398,7 +1397,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerKickoutUser(JNIEnv* env,
-                                                jclass  thiz,
+                                                jclass  clazz,
                                                 jlong   server,
                                                 jobject user)
 {
@@ -1438,14 +1437,14 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
-                                            jclass       thiz,
+                                            jclass       clazz,
                                             jlong        server,
                                             jbyteArray   buf,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
     const jboolean ret = Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(
-        env, thiz, server, buf, NULL, charset, dstUsers);
+        env, clazz, server, buf, NULL, charset, dstUsers);
 
     return (ret);
 }
@@ -1454,7 +1453,7 @@ JNIEXPORT
 jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
-                                             jclass       thiz,
+                                             jclass       clazz,
                                              jlong        server,
                                              jbyteArray   buf1,
                                              jbyteArray   buf2,     /* = null */
@@ -1561,7 +1560,7 @@ JNIEXPORT
 void
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline(JNIEnv* env,
-                                                     jclass  thiz,
+                                                     jclass  clazz,
                                                      jlong   server,
                                                      jlong   redlineBytes)
 {
@@ -1590,7 +1589,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSetOutputRedline(JNIEnv* env,
         server2->AddRef();
     }
 
-    server2->SetOutputRedline((unsigned long)redlineBytes);
+    server2->SetOutputRedline((size_t)redlineBytes);
     server2->Release();
 }
 
@@ -1598,13 +1597,13 @@ JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
-                                                     jclass  thiz,
+                                                     jclass  clazz,
                                                      jlong   server)
 {
     assert(server != 0);
     if (server == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgServerJni* server2 = NULL;
@@ -1627,14 +1626,14 @@ Java_com_pro_msg_ProMsgJni_msgServerGetOutputRedline(JNIEnv* env,
         server2->Release();
     }
 
-    return (redlineBytes);
+    return redlineBytes;
 }
 
 JNIEXPORT
 jlong
 JNICALL
 Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes(JNIEnv* env,
-                                                    jclass  thiz,
+                                                    jclass  clazz,
                                                     jlong   server,
                                                     jobject user)
 {

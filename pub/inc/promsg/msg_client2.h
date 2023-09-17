@@ -108,7 +108,7 @@ private:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
@@ -121,7 +121,7 @@ private:
 
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
-        PRO_INT64      peerAliveTick
+        int64_t        peerAliveTick
         );
 
 private:
