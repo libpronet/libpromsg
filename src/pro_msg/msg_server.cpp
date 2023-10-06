@@ -42,8 +42,8 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
     configInfo.msgs_ssl_crlfiles.clear();
     configInfo.msgs_ssl_certfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -52,16 +52,15 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
         if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
         {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN &&
-                value <= (int)RTP_MMT_MSG_MAX)
+            int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
             }
         }
         else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.msgs_hub_port = (unsigned short)value;
@@ -87,6 +86,16 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configValue = "";
             }
         }
+        else if (stricmp(configName.c_str(), "msgs_password_cid255") == 0)
+        {
+            configInfo.msgs_password_cid255 = configValue;
+
+            if (!configValue.empty())
+            {
+                ProZeroMemory(&configValue[0], configValue.length());
+                configValue = "";
+            }
+        }
         else if (stricmp(configName.c_str(), "msgs_password_cidx") == 0)
         {
             configInfo.msgs_password_cidx = configValue;
@@ -99,7 +108,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgs_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_handshake_timeout = value;
@@ -107,7 +116,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgs_redline_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_redline_bytes = value;
@@ -206,9 +215,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
 CMsgServer*
 CMsgServer::CreateInstance()
 {
-    CMsgServer* const server = new CMsgServer;
-
-    return (server);
+    return new CMsgServer;
 }
 
 CMsgServer::CMsgServer()
@@ -232,10 +239,9 @@ CMsgServer::Init(IProReactor*   reactor,
     assert(reactor != NULL);
     assert(configFileName != NULL);
     assert(configFileName[0] != '\0');
-    if (reactor == NULL ||
-        configFileName == NULL || configFileName[0] == '\0')
+    if (reactor == NULL || configFileName == NULL || configFileName[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     char exeRoot[1024] = "";
@@ -256,7 +262,7 @@ CMsgServer::Init(IProReactor*   reactor,
     CProStlVector<PRO_CONFIG_ITEM> configs;
     if (!configFile.Read(configs))
     {
-        return (false);
+        return false;
     }
 
     MSG_SERVER_CONFIG_INFO configInfo;
@@ -285,7 +291,7 @@ CMsgServer::Init(IProReactor*   reactor,
         assert(m_msgServer == NULL);
         if (m_reactor != NULL || m_sslConfig != NULL || m_msgServer != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.msgs_enable_ssl)
@@ -301,7 +307,7 @@ CMsgServer::Init(IProReactor*   reactor,
             {
                 if (!configInfo.msgs_ssl_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.msgs_ssl_cafiles[i][0]);
+                    caFiles.push_back(configInfo.msgs_ssl_cafiles[i].c_str());
                 }
             }
 
@@ -312,7 +318,7 @@ CMsgServer::Init(IProReactor*   reactor,
             {
                 if (!configInfo.msgs_ssl_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.msgs_ssl_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.msgs_ssl_crlfiles[i].c_str());
                 }
             }
 
@@ -323,7 +329,7 @@ CMsgServer::Init(IProReactor*   reactor,
             {
                 if (!configInfo.msgs_ssl_certfiles[i].empty())
                 {
-                    certFiles.push_back(&configInfo.msgs_ssl_certfiles[i][0]);
+                    certFiles.push_back(configInfo.msgs_ssl_certfiles[i].c_str());
                 }
             }
 
@@ -335,8 +341,7 @@ CMsgServer::Init(IProReactor*   reactor,
                     goto EXIT;
                 }
 
-                ProSslServerConfig_EnableSha1Cert(
-                    sslConfig, configInfo.msgs_ssl_enable_sha1cert);
+                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.msgs_ssl_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     sslConfig,
@@ -354,7 +359,7 @@ CMsgServer::Init(IProReactor*   reactor,
                     &certFiles[0],
                     certFiles.size(),
                     configInfo.msgs_ssl_keyfile.c_str(),
-                    NULL
+                    NULL /* password to decrypt the keyfile */
                     ))
                 {
                     goto EXIT;
@@ -375,8 +380,10 @@ CMsgServer::Init(IProReactor*   reactor,
         {
             goto EXIT;
         }
-
-        msgServer->SetOutputRedlineToUsr(configInfo.msgs_redline_bytes);
+        else
+        {
+            msgServer->SetOutputRedlineToUsr(configInfo.msgs_redline_bytes);
+        }
 
         m_reactor       = reactor;
         m_msgConfigInfo = configInfo;
@@ -384,14 +391,14 @@ CMsgServer::Init(IProReactor*   reactor,
         m_msgServer     = msgServer;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     DeleteRtpMsgServer(msgServer);
     ProSslServerConfig_Delete(sslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -422,17 +429,13 @@ CMsgServer::Fini()
 unsigned long
 CMsgServer::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CMsgServer::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 RTP_MM_TYPE
@@ -446,7 +449,7 @@ CMsgServer::GetMmType() const
         mmType = m_msgConfigInfo.msgs_mm_type;
     }
 
-    return (mmType);
+    return mmType;
 }
 
 unsigned short
@@ -460,7 +463,7 @@ CMsgServer::GetServicePort() const
         servicePort = m_msgConfigInfo.msgs_hub_port;
     }
 
-    return (servicePort);
+    return servicePort;
 }
 
 const char*
@@ -478,7 +481,7 @@ CMsgServer::GetSslSuite(const RTP_MSG_USER& user,
         }
     }
 
-    return (suiteName);
+    return suiteName;
 }
 
 size_t
@@ -501,16 +504,14 @@ CMsgServer::GetUserCount() const
 void
 CMsgServer::KickoutUser(const RTP_MSG_USER& user)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_reactor == NULL || m_msgServer == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_reactor == NULL || m_msgServer == NULL)
-        {
-            return;
-        }
-
-        m_msgServer->KickoutUser(&user);
+        return;
     }
+
+    m_msgServer->KickoutUser(&user);
 }
 
 bool
@@ -539,34 +540,31 @@ CMsgServer::SendMsg2(const void*         buf1,
 
         if (m_reactor == NULL || m_msgServer == NULL)
         {
-            return (false);
+            return false;
         }
 
         m_msgServer->AddRef();
         msgServer = m_msgServer;
     }
 
-    const bool ret = msgServer->SendMsg2(
-        buf1, size1, buf2, size2, charset, dstUsers, dstUserCount);
+    bool ret = msgServer->SendMsg2(buf1, size1, buf2, size2, charset, dstUsers, dstUserCount);
     msgServer->Release();
 
-    return (ret);
+    return ret;
 }
 
 void
 CMsgServer::SetOutputRedline(size_t redlineBytes)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_reactor == NULL || m_msgServer == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_reactor == NULL || m_msgServer == NULL)
-        {
-            return;
-        }
-
-        m_msgServer->SetOutputRedlineToUsr(redlineBytes);
-        m_msgConfigInfo.msgs_redline_bytes = (unsigned int)m_msgServer->GetOutputRedlineToUsr();
+        return;
     }
+
+    m_msgServer->SetOutputRedlineToUsr(redlineBytes);
+    m_msgConfigInfo.msgs_redline_bytes = (unsigned int)m_msgServer->GetOutputRedlineToUsr();
 }
 
 size_t
@@ -605,8 +603,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
-                        const char          hash[32],
-                        const char          nonce[32],
+                        const unsigned char hash[32],
+                        const unsigned char nonce[32],
                         uint64_t*           userId,
                         uint16_t*           instId,
                         int64_t*            appData,
@@ -622,12 +620,11 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
     assert(instId != NULL);
     assert(appData != NULL);
     assert(isC2s != NULL);
-    if (msgServer == NULL || user == NULL ||
-        user->classId == 0 || user->UserId() == 0 ||
-        userPublicIp == NULL || userPublicIp[0] == '\0' ||
-        userId == NULL || instId == NULL || appData == NULL || isC2s == NULL)
+    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
+        userPublicIp == NULL || userPublicIp[0] == '\0' || userId == NULL || instId == NULL ||
+        appData == NULL || isC2s == NULL)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -635,41 +632,45 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 
         if (m_reactor == NULL || m_msgServer == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (msgServer != m_msgServer)
         {
-            return (false);
+            return false;
         }
 
         const char* password = NULL;
 
-        if (user->classId == 1)      /* 1-... */
+        if (user->classId == 1)        /* 1-... */
         {
-            password = &m_msgConfigInfo.msgs_password_cid1[0];
+            password = m_msgConfigInfo.msgs_password_cid1.c_str();
         }
-        else if (user->classId == 2) /* 2-... */
+        else if (user->classId == 2)   /* 2-... */
         {
-            password = &m_msgConfigInfo.msgs_password_cid2[0];
+            password = m_msgConfigInfo.msgs_password_cid2.c_str();
         }
-        else                         /* others */
+        else if (user->classId == 255) /* 255-... */
         {
-            password = &m_msgConfigInfo.msgs_password_cidx[0];
+            password = m_msgConfigInfo.msgs_password_cid255.c_str();
+        }
+        else                           /* others */
+        {
+            password = m_msgConfigInfo.msgs_password_cidx.c_str();
         }
 
         if (!CheckRtpServiceData(nonce, password, hash))
         {
-            return (false);
+            return false;
         }
 
         *userId  = user->UserId();
         *instId  = user->instId;
         *appData = 0; /* You can do something. */
-        *isC2s   = false;
+        *isC2s   = c2sUser == NULL && user->classId == 255;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -683,8 +684,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || userPublicIp == NULL ||
-        userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
     {
         return;
     }
@@ -711,8 +711,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 void
 CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
-                        long                errorCode,
-                        long                sslCode)
+                        int                 errorCode,
+                        int                 sslCode)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -774,7 +774,7 @@ CMsgServer::OnHeartbeatUser(IRtpMsgServer*      msgServer,
 void
 CMsgServer::OnRecvMsg(IRtpMsgServer*      msgServer,
                       const void*         buf,
-                      unsigned long       size,
+                      size_t              size,
                       uint16_t            charset,
                       const RTP_MSG_USER* srcUser)
 {

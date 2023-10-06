@@ -73,7 +73,7 @@ NewJavaString_i(JNIEnv*     env,
 {
     if (env == NULL || utf8String == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     jstring javaString = env->NewStringUTF(utf8String);
@@ -82,7 +82,7 @@ NewJavaString_i(JNIEnv*     env,
         javaString = NULL;
     }
 
-    return (javaString);
+    return javaString;
 }
 
 /* static */
@@ -92,7 +92,7 @@ NewJavaUser_i(JNIEnv*             env,
 {
     if (env == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     jobject javaUser = NULL;
@@ -102,7 +102,7 @@ NewJavaUser_i(JNIEnv*             env,
 
         if (g_s_meta.clazz == NULL)
         {
-            return (NULL);
+            return NULL;
         }
 
         javaUser = env->NewObject(
@@ -118,7 +118,7 @@ NewJavaUser_i(JNIEnv*             env,
         }
     }
 
-    return (javaUser);
+    return javaUser;
 }
 
 static
@@ -142,18 +142,17 @@ MSG_USER_java2cpp_i(JNIEnv*       env,
             return;
         }
 
-        const jshort classId = env->GetShortField(javaUser, g_s_meta.fid_classId);
-        const jlong  userId  = env->GetLongField (javaUser, g_s_meta.fid_userId);
-        const jint   instId  = env->GetIntField  (javaUser, g_s_meta.fid_instId);
-        if (classId <= 0 || classId > 255 ||
-            userId < 0 || instId < 0 || instId > 65535)
+        jshort classId = env->GetShortField(javaUser, g_s_meta.fid_classId);
+        jlong  userId  = env->GetLongField (javaUser, g_s_meta.fid_userId);
+        jint   instId  = env->GetIntField  (javaUser, g_s_meta.fid_instId);
+        if (classId <= 0 || classId > 255 || userId < 0 || instId < 0 || instId > 65535)
         {
             return;
         }
 
         cppUser.classId = (unsigned char)classId;
-        cppUser.UserId((PRO_UINT64)userId);
-        cppUser.instId  = (PRO_UINT16)instId;
+        cppUser.UserId((uint64_t)userId);
+        cppUser.instId  = (uint16_t)instId;
     }
 }
 
@@ -193,7 +192,7 @@ JNI_OnLoad(JavaVM* jvm,
 {
     JniUtilOnLoad(jvm, JNI_VERSION_1_6);
 
-    return (JNI_VERSION_1_6);
+    return JNI_VERSION_1_6;
 }
 
 JNIEXPORT
@@ -221,7 +220,7 @@ Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
     }
 
     {
-        jshort* const p = env->GetShortArrayElements(major_1, NULL);
+        jshort* p = env->GetShortArrayElements(major_1, NULL);
         if (p == NULL || env->ExceptionCheck())
         {
             return;
@@ -232,7 +231,7 @@ Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
     }
 
     {
-        jshort* const p = env->GetShortArrayElements(minor_1, NULL);
+        jshort* p = env->GetShortArrayElements(minor_1, NULL);
         if (p == NULL || env->ExceptionCheck())
         {
             return;
@@ -243,7 +242,7 @@ Java_com_pro_msg_ProMsgJni_getCoreVersion(JNIEnv*     env,
     }
 
     {
-        jshort* const p = env->GetShortArrayElements(patch_1, NULL);
+        jshort* p = env->GetShortArrayElements(patch_1, NULL);
         if (p == NULL || env->ExceptionCheck())
         {
             return;
@@ -259,13 +258,13 @@ jboolean
 JNICALL
 Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
                                 jclass  clazz,
-                                jlong   threadCount) /* 1 ~ (2/20) ~ 100 */
+                                jint    threadCount) /* 1 ~ (2/20) ~ 100 */
 {
     assert(threadCount > 0);
     assert(threadCount <= 100);
     if (threadCount <= 0 || threadCount > 100)
     {
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     IProReactor*   reactor = NULL;
@@ -277,17 +276,16 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
         assert(g_s_reactor == NULL);
         if (g_s_reactor != NULL)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
-        reactor = ProCreateReactor((unsigned long)threadCount);
+        reactor = ProCreateReactor((unsigned int)threadCount);
         if (reactor == NULL)
         {
             goto EXIT;
         }
 
-        const jclass clazz =
-            env->FindClass("com/pro/msg/ProMsgJni$PRO_MSG_USER");
+        jclass clazz = env->FindClass("com/pro/msg/ProMsgJni$PRO_MSG_USER");
         if (clazz == NULL || env->ExceptionCheck())
         {
             goto EXIT;
@@ -340,8 +338,7 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
         printf(
             "\n"
             "%s \n"
-            " Java_com_pro_msg_ProMsgJni_init(threadCount : %u,"
-            " processId : %u/0x%X) \n"
+            " Java_com_pro_msg_ProMsgJni_init(threadCount : %u, processId : %u/0x%X) \n"
             ,
             timeString.c_str(),
             (unsigned int)threadCount,
@@ -350,7 +347,7 @@ Java_com_pro_msg_ProMsgJni_init(JNIEnv* env,
             );
     }}}
 
-    return (JNI_TRUE);
+    return JNI_TRUE;
 
 EXIT:
 
@@ -361,7 +358,7 @@ EXIT:
 
     ProDeleteReactor(reactor);
 
-    return (JNI_FALSE);
+    return JNI_FALSE;
 }
 
 JNIEXPORT
@@ -393,12 +390,12 @@ Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
         g_s_reactor = NULL;
     }
 
-    CProStlSet<jlong>::iterator itr = servers.begin();
-    CProStlSet<jlong>::iterator end = servers.end();
+    auto itr = servers.begin();
+    auto end = servers.end();
 
     for (; itr != end; ++itr)
     {
-        CMsgServerJni* const p = (CMsgServerJni*)*itr;
+        CMsgServerJni* p = (CMsgServerJni*)*itr;
         p->Fini();
         p->Release();
     }
@@ -408,7 +405,7 @@ Java_com_pro_msg_ProMsgJni_fini(JNIEnv* env,
 
     for (; itr != end; ++itr)
     {
-        CMsgClientJni* const p = (CMsgClientJni*)*itr;
+        CMsgClientJni* p = (CMsgClientJni*)*itr;
         p->Fini();
         p->Release();
     }
@@ -436,7 +433,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
     assert(configFileName != NULL);
     if (listener == NULL || configFileName == NULL)
     {
-        return (0);
+        return 0;
     }
 
     char           cppConfigFileName[1024] = "";
@@ -453,30 +450,28 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
     cppLocalIp[sizeof(cppLocalIp) - 1]               = '\0';
 
     {
-        const jsize uniSize = env->GetStringLength(configFileName);
-        const jsize utfSize = env->GetStringUTFLength(configFileName);
+        jsize uniSize = env->GetStringLength(configFileName);
+        jsize utfSize = env->GetStringUTFLength(configFileName);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppConfigFileName))
         {
-            env->GetStringUTFRegion(
-                configFileName, 0, uniSize, cppConfigFileName);
+            env->GetStringUTFRegion(configFileName, 0, uniSize, cppConfigFileName);
         }
 
         if (env->ExceptionCheck())
         {
-            return (0);
+            return 0;
         }
     }
 
-    if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
-        mmType <= (jshort)RTP_MMT_MSG_MAX)
+    if (mmType >= (jshort)RTP_MMT_MSG_MIN && mmType <= (jshort)RTP_MMT_MSG_MAX)
     {
         cppMmType = (RTP_MM_TYPE)mmType;
     }
 
     if (serverIp != NULL)
     {
-        const jsize uniSize = env->GetStringLength(serverIp);
-        const jsize utfSize = env->GetStringUTFLength(serverIp);
+        jsize uniSize = env->GetStringLength(serverIp);
+        jsize utfSize = env->GetStringUTFLength(serverIp);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppServerIp))
         {
             env->GetStringUTFRegion(serverIp, 0, uniSize, cppServerIp);
@@ -484,7 +479,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
 
         if (env->ExceptionCheck())
         {
-            return (0);
+            return 0;
         }
     }
 
@@ -500,8 +495,8 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
 
     if (password != NULL)
     {
-        const jsize uniSize = env->GetStringLength(password);
-        const jsize utfSize = env->GetStringUTFLength(password);
+        jsize uniSize = env->GetStringLength(password);
+        jsize utfSize = env->GetStringUTFLength(password);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppPassword))
         {
             env->GetStringUTFRegion(password, 0, uniSize, cppPassword);
@@ -509,14 +504,14 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
 
         if (env->ExceptionCheck())
         {
-            return (0);
+            return 0;
         }
     }
 
     if (localIp != NULL)
     {
-        const jsize uniSize = env->GetStringLength(localIp);
-        const jsize utfSize = env->GetStringUTFLength(localIp);
+        jsize uniSize = env->GetStringLength(localIp);
+        jsize utfSize = env->GetStringUTFLength(localIp);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppLocalIp))
         {
             env->GetStringUTFRegion(localIp, 0, uniSize, cppLocalIp);
@@ -524,7 +519,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
 
         if (env->ExceptionCheck())
         {
-            return (0);
+            return 0;
         }
     }
 
@@ -536,13 +531,13 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         assert(g_s_reactor != NULL);
         if (g_s_reactor == NULL)
         {
-            return (0);
+            return 0;
         }
 
         client = CMsgClientJni::CreateInstance(env, listener);
         if (client == NULL)
         {
-            return (0);
+            return 0;
         }
 
         if (!client->Init(g_s_reactor, cppConfigFileName, cppMmType,
@@ -550,13 +545,13 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
         {
             client->Release();
 
-            return (0);
+            return 0;
         }
 
         g_s_clients.insert((jlong)client);
     }
 
-    return ((jlong)client);
+    return (jlong)client;
 }
 
 JNIEXPORT
@@ -587,7 +582,7 @@ Java_com_pro_msg_ProMsgJni_msgClientDelete(JNIEnv* env,
         g_s_clients.erase(client);
     }
 
-    CMsgClientJni* const p = (CMsgClientJni*)client;
+    CMsgClientJni* p = (CMsgClientJni*)client;
     p->Fini();
     p->Release();
 }
@@ -602,7 +597,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetMmType(JNIEnv* evn,
     assert(client != 0);
     if (client == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -625,7 +620,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetMmType(JNIEnv* evn,
         client2->Release();
     }
 
-    return (mmType);
+    return mmType;
 }
 
 JNIEXPORT
@@ -638,7 +633,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -664,7 +659,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetUser(JNIEnv* env,
         client2->Release();
     }
 
-    return (javaUser);
+    return javaUser;
 }
 
 JNIEXPORT
@@ -677,7 +672,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -703,7 +698,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSslSuite(JNIEnv* env,
         client2->Release();
     }
 
-    return (javaSuiteName);
+    return javaSuiteName;
 }
 
 JNIEXPORT
@@ -716,7 +711,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -742,7 +737,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalIp(JNIEnv* env,
         client2->Release();
     }
 
-    return (javaLocalIp);
+    return javaLocalIp;
 }
 
 JNIEXPORT
@@ -755,7 +750,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -778,7 +773,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetLocalPort(JNIEnv* env,
         client2->Release();
     }
 
-    return (localPort);
+    return localPort;
 }
 
 JNIEXPORT
@@ -791,7 +786,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -817,7 +812,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemoteIp(JNIEnv* env,
         client2->Release();
     }
 
-    return (javaRemoteIp);
+    return javaRemoteIp;
 }
 
 JNIEXPORT
@@ -830,7 +825,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -853,7 +848,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetRemotePort(JNIEnv* env,
         client2->Release();
     }
 
-    return (remotePort);
+    return remotePort;
 }
 
 JNIEXPORT
@@ -866,10 +861,10 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
-    const jboolean ret = Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(
+    jboolean ret = Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(
         env, clazz, client, buf, NULL, charset, dstUsers);
 
-    return (ret);
+    return ret;
 }
 
 JNIEXPORT
@@ -884,29 +879,28 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
                                              jobjectArray dstUsers) /* count <= 255 */
 {
     assert(client != 0);
-    if (client == 0 || buf1 == NULL || charset < 0 || charset > 65535 ||
-        dstUsers == NULL)
+    if (client == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     CProStlVector<RTP_MSG_USER> cppDstUsers;
 
     {
-        int       i = 0;
-        const int c = (int)env->GetArrayLength(dstUsers);
+        int i = 0;
+        int c = (int)env->GetArrayLength(dstUsers);
 
         if (c <= 0 || c > 255)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         for (; i < c; ++i)
         {
-            const jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
+            jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
             if (javaUser == NULL || env->ExceptionCheck())
             {
-                return (JNI_FALSE);
+                return JNI_FALSE;
             }
 
             RTP_MSG_USER cppUser;
@@ -924,25 +918,25 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
 
         if (g_s_reactor == NULL)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         if (g_s_clients.find(client) == g_s_clients.end())
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         client2 = (CMsgClientJni*)client;
         client2->AddRef();
     }
 
-    const jsize  buf1_size = env->GetArrayLength(buf1);
-    jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
+    jsize  buf1_size = env->GetArrayLength(buf1);
+    jbyte* buf1_p    = env->GetByteArrayElements(buf1, NULL);
     if (buf1_size <= 0 || buf1_p == NULL || env->ExceptionCheck())
     {
         client2->Release();
 
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     jsize  buf2_size = 0;
@@ -956,16 +950,16 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
             env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
             client2->Release();
 
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
     }
 
-    const bool ret = client2->SendMsg2(
+    bool ret = client2->SendMsg2(
         buf1_p,
         buf1_size,
         buf2_p,
         buf2_size,
-        (PRO_UINT16)charset,
+        (uint16_t)charset,
         &cppDstUsers[0],
         (unsigned char)cppDstUsers.size()
         );
@@ -976,7 +970,7 @@ Java_com_pro_msg_ProMsgJni_msgClientSendMsg2(JNIEnv*      env,
     }
     client2->Release();
 
-    return (ret ? JNI_TRUE : JNI_FALSE);
+    return ret ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT
@@ -1062,7 +1056,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSendingBytes(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -1085,7 +1079,7 @@ Java_com_pro_msg_ProMsgJni_msgClientGetSendingBytes(JNIEnv* env,
         client2->Release();
     }
 
-    return (sendingBytes);
+    return sendingBytes;
 }
 
 JNIEXPORT
@@ -1098,7 +1092,7 @@ Java_com_pro_msg_ProMsgJni_msgClientReconnect(JNIEnv* env,
     assert(client != 0);
     if (client == 0)
     {
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     CMsgClientJni* client2 = NULL;
@@ -1108,22 +1102,22 @@ Java_com_pro_msg_ProMsgJni_msgClientReconnect(JNIEnv* env,
 
         if (g_s_reactor == NULL)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         if (g_s_clients.find(client) == g_s_clients.end())
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         client2 = (CMsgClientJni*)client;
         client2->AddRef();
     }
 
-    const bool ret = client2->Reconnect();
+    bool ret = client2->Reconnect();
     client2->Release();
 
-    return (ret ? JNI_TRUE : JNI_FALSE);
+    return ret ? JNI_TRUE : JNI_FALSE;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1142,7 +1136,7 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
     assert(configFileName != NULL);
     if (listener == NULL || configFileName == NULL)
     {
-        return (0);
+        return 0;
     }
 
     char           cppConfigFileName[1024] = "";
@@ -1152,22 +1146,20 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
     cppConfigFileName[sizeof(cppConfigFileName) - 1] = '\0';
 
     {
-        const jsize uniSize = env->GetStringLength(configFileName);
-        const jsize utfSize = env->GetStringUTFLength(configFileName);
+        jsize uniSize = env->GetStringLength(configFileName);
+        jsize utfSize = env->GetStringUTFLength(configFileName);
         if (utfSize > 0 && utfSize < (jsize)sizeof(cppConfigFileName))
         {
-            env->GetStringUTFRegion(
-                configFileName, 0, uniSize, cppConfigFileName);
+            env->GetStringUTFRegion(configFileName, 0, uniSize, cppConfigFileName);
         }
 
         if (env->ExceptionCheck())
         {
-            return (0);
+            return 0;
         }
     }
 
-    if (mmType >= (jshort)RTP_MMT_MSG_MIN &&
-        mmType <= (jshort)RTP_MMT_MSG_MAX)
+    if (mmType >= (jshort)RTP_MMT_MSG_MIN && mmType <= (jshort)RTP_MMT_MSG_MAX)
     {
         cppMmType = (RTP_MM_TYPE)mmType;
     }
@@ -1185,27 +1177,26 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
         assert(g_s_reactor != NULL);
         if (g_s_reactor == NULL)
         {
-            return (0);
+            return 0;
         }
 
         server = CMsgServerJni::CreateInstance(env, listener);
         if (server == NULL)
         {
-            return (0);
+            return 0;
         }
 
-        if (!server->Init(
-            g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
+        if (!server->Init(g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
         {
             server->Release();
 
-            return (0);
+            return 0;
         }
 
         g_s_servers.insert((jlong)server);
     }
 
-    return ((jlong)server);
+    return (jlong)server;
 }
 
 JNIEXPORT
@@ -1236,7 +1227,7 @@ Java_com_pro_msg_ProMsgJni_msgServerDelete(JNIEnv* env,
         g_s_servers.erase(server);
     }
 
-    CMsgServerJni* const p = (CMsgServerJni*)server;
+    CMsgServerJni* p = (CMsgServerJni*)server;
     p->Fini();
     p->Release();
 }
@@ -1251,7 +1242,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetMmType(JNIEnv* evn,
     assert(server != 0);
     if (server == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgServerJni* server2 = NULL;
@@ -1274,7 +1265,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetMmType(JNIEnv* evn,
         server2->Release();
     }
 
-    return (mmType);
+    return mmType;
 }
 
 JNIEXPORT
@@ -1287,7 +1278,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetServicePort(JNIEnv* env,
     assert(server != 0);
     if (server == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgServerJni* server2 = NULL;
@@ -1310,7 +1301,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetServicePort(JNIEnv* env,
         server2->Release();
     }
 
-    return (servicePort);
+    return servicePort;
 }
 
 JNIEXPORT
@@ -1325,7 +1316,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetSslSuite(JNIEnv* env,
     assert(user != NULL);
     if (server == 0 || user == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     RTP_MSG_USER cppUser;
@@ -1354,7 +1345,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetSslSuite(JNIEnv* env,
         server2->Release();
     }
 
-    return (javaSuiteName);
+    return javaSuiteName;
 }
 
 JNIEXPORT
@@ -1367,7 +1358,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
     assert(server != 0);
     if (server == 0)
     {
-        return (0);
+        return 0;
     }
 
     CMsgServerJni* server2 = NULL;
@@ -1390,7 +1381,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetUserCount(JNIEnv* env,
         server2->Release();
     }
 
-    return (userCount);
+    return userCount;
 }
 
 JNIEXPORT
@@ -1443,10 +1434,10 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg(JNIEnv*      env,
                                             jint         charset,  /* 0 ~ 65535 */
                                             jobjectArray dstUsers) /* count <= 255 */
 {
-    const jboolean ret = Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(
+    jboolean ret = Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(
         env, clazz, server, buf, NULL, charset, dstUsers);
 
-    return (ret);
+    return ret;
 }
 
 JNIEXPORT
@@ -1461,29 +1452,28 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
                                              jobjectArray dstUsers) /* count <= 255 */
 {
     assert(server != 0);
-    if (server == 0 || buf1 == NULL || charset < 0 || charset > 65535 ||
-        dstUsers == NULL)
+    if (server == 0 || buf1 == NULL || charset < 0 || charset > 65535 || dstUsers == NULL)
     {
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     CProStlVector<RTP_MSG_USER> cppDstUsers;
 
     {
-        int       i = 0;
-        const int c = (int)env->GetArrayLength(dstUsers);
+        int i = 0;
+        int c = (int)env->GetArrayLength(dstUsers);
 
         if (c <= 0 || c > 255)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         for (; i < c; ++i)
         {
-            const jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
+            jobject javaUser = env->GetObjectArrayElement(dstUsers, i);
             if (javaUser == NULL || env->ExceptionCheck())
             {
-                return (JNI_FALSE);
+                return JNI_FALSE;
             }
 
             RTP_MSG_USER cppUser;
@@ -1501,25 +1491,25 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
 
         if (g_s_reactor == NULL)
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         if (g_s_servers.find(server) == g_s_servers.end())
         {
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
 
         server2 = (CMsgServerJni*)server;
         server2->AddRef();
     }
 
-    const jsize  buf1_size = env->GetArrayLength(buf1);
-    jbyte* const buf1_p    = env->GetByteArrayElements(buf1, NULL);
+    jsize  buf1_size = env->GetArrayLength(buf1);
+    jbyte* buf1_p    = env->GetByteArrayElements(buf1, NULL);
     if (buf1_size <= 0 || buf1_p == NULL || env->ExceptionCheck())
     {
         server2->Release();
 
-        return (JNI_FALSE);
+        return JNI_FALSE;
     }
 
     jsize  buf2_size = 0;
@@ -1533,16 +1523,16 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
             env->ReleaseByteArrayElements(buf1, buf1_p, JNI_ABORT);
             server2->Release();
 
-            return (JNI_FALSE);
+            return JNI_FALSE;
         }
     }
 
-    const bool ret = server2->SendMsg2(
+    bool ret = server2->SendMsg2(
         buf1_p,
         buf1_size,
         buf2_p,
         buf2_size,
-        (PRO_UINT16)charset,
+        (uint16_t)charset,
         &cppDstUsers[0],
         (unsigned char)cppDstUsers.size()
         );
@@ -1553,7 +1543,7 @@ Java_com_pro_msg_ProMsgJni_msgServerSendMsg2(JNIEnv*      env,
     }
     server2->Release();
 
-    return (ret ? JNI_TRUE : JNI_FALSE);
+    return ret ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT
@@ -1640,7 +1630,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes(JNIEnv* env,
     assert(server != 0);
     if (server == 0 || user == NULL)
     {
-        return (0);
+        return 0;
     }
 
     RTP_MSG_USER cppUser;
@@ -1666,7 +1656,7 @@ Java_com_pro_msg_ProMsgJni_msgServerGetSendingBytes(JNIEnv* env,
         server2->Release();
     }
 
-    return (sendingBytes);
+    return sendingBytes;
 }
 
 /////////////////////////////////////////////////////////////////////////////

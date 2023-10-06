@@ -60,8 +60,8 @@ private:
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode,
-        long                sslCode
+        int                 errorCode,
+        int                 sslCode
         );
 
     virtual void OnHeartbeatUser(
@@ -73,7 +73,7 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );

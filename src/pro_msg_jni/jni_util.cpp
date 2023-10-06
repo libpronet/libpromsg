@@ -96,7 +96,7 @@ JniUtilAttach()
 {
     if (g_s_jvm == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     JNIEnv* env = NULL;
@@ -105,7 +105,7 @@ JniUtilAttach()
     err = g_s_jvm->GetEnv((void**)&env, g_s_ver);
     if (err == JNI_OK && env != NULL)
     {
-        return (env);
+        return env;
     }
 
 #if defined(_WIN32)
@@ -115,7 +115,7 @@ JniUtilAttach()
 #endif
     if (env != NULL)
     {
-        return (env);
+        return env;
     }
 
 #if defined(ANDROID)
@@ -125,7 +125,7 @@ JniUtilAttach()
 #endif
     if (err != JNI_OK || env == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
 #if defined(_WIN32)
@@ -134,7 +134,7 @@ JniUtilAttach()
     pthread_setspecific(g_s_key, env);
 #endif
 
-    return (env);
+    return env;
 }
 
 void

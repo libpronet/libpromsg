@@ -58,21 +58,21 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,
-        long           sslCode,
+        int            errorCode,
+        int            sslCode,
         bool           tcpConnected
         );
 
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
-        PRO_INT64      peerAliveTick
+        int64_t        peerAliveTick
         );
 
 private:

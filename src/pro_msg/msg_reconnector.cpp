@@ -32,9 +32,7 @@
 CMsgReconnector*
 CMsgReconnector::CreateInstance()
 {
-    CMsgReconnector* const reconnector = new CMsgReconnector;
-
-    return (reconnector);
+    return new CMsgReconnector;
 }
 
 CMsgReconnector::CMsgReconnector()
@@ -58,7 +56,7 @@ CMsgReconnector::Init(CMsgClient*  client,
     assert(reactor != NULL);
     if (client == NULL || reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -68,7 +66,7 @@ CMsgReconnector::Init(CMsgClient*  client,
         assert(m_reactor == NULL);
         if (m_client != NULL || m_reactor != NULL)
         {
-            return (false);
+            return false;
         }
 
         client->AddRef();
@@ -77,7 +75,7 @@ CMsgReconnector::Init(CMsgClient*  client,
         m_connectTick = ProGetTickCount64();
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -107,21 +105,17 @@ CMsgReconnector::Fini()
 unsigned long
 CMsgReconnector::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CMsgReconnector::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
-CMsgReconnector::Reconnect(unsigned long intervalInSeconds)
+CMsgReconnector::Reconnect(unsigned int intervalInSeconds)
 {
     if (intervalInSeconds == 0)
     {
@@ -139,23 +133,23 @@ CMsgReconnector::Reconnect(unsigned long intervalInSeconds)
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        PRO_INT64 tickInterval = intervalInSeconds;
+        int64_t tickInterval = intervalInSeconds;
         tickInterval *= 1000;
 
-        PRO_INT64 tickDelay =
-            m_connectTick + tickInterval - ProGetTickCount64();
+        int64_t tickDelay = m_connectTick + tickInterval - ProGetTickCount64();
         if (tickDelay < 0)
         {
             tickDelay = 0;
         }
 
-        m_timerId = m_reactor->ScheduleTimer(this, tickDelay, false);
+        m_timerId = m_reactor->SetupTimer(this, tickDelay, 0);
     }
 }
 
 void
 CMsgReconnector::OnTimer(void*    factory,
                          uint64_t timerId,
+                         int64_t  tick,
                          int64_t  userData)
 {
     assert(factory != NULL);
@@ -183,7 +177,7 @@ CMsgReconnector::OnTimer(void*    factory,
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_connectTick = ProGetTickCount64();
+        m_connectTick = tick;
 
         m_client->AddRef();
         client = m_client;

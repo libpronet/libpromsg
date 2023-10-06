@@ -44,8 +44,8 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
     configInfo.msgc_ssl_cafiles.clear();
     configInfo.msgc_ssl_crlfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -54,9 +54,8 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
         if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
         {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN &&
-                value <= (int)RTP_MMT_MSG_MAX)
+            int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
@@ -70,7 +69,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgc_server_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.msgc_server_port = (unsigned short)value;
@@ -102,7 +101,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgc_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgc_handshake_timeout = value;
@@ -110,7 +109,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgc_reconnect_interval") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgc_reconnect_interval = value;
@@ -118,7 +117,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgc_redline_bytes = value;
@@ -188,9 +187,7 @@ ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
 CMsgClient*
 CMsgClient::CreateInstance()
 {
-    CMsgClient* const client = new CMsgClient;
-
-    return (client);
+    return new CMsgClient;
 }
 
 CMsgClient::CMsgClient()
@@ -221,14 +218,15 @@ CMsgClient::Init(IProReactor*        reactor,
     assert(configFileName[0] != '\0');
     if (reactor == NULL || configFileName == NULL || configFileName[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
 
     CProStlString configFileName2 = configFileName;
-    if (configFileName2[0] == '.' || configFileName2.find_first_of("\\/") == CProStlString::npos)
+    if (configFileName2[0] == '.' ||
+        configFileName2.find_first_of("\\/") == CProStlString::npos)
     {
         CProStlString fileName = exeRoot;
         fileName += configFileName2;
@@ -241,7 +239,7 @@ CMsgClient::Init(IProReactor*        reactor,
     CProStlVector<PRO_CONFIG_ITEM> configs;
     if (!configFile.Read(configs))
     {
-        return (false);
+        return false;
     }
 
     MSG_CLIENT_CONFIG_INFO configInfo;
@@ -279,10 +277,10 @@ CMsgClient::Init(IProReactor*        reactor,
      * DNS, for reconnecting
      */
     {
-        const PRO_UINT32 serverIp2 = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        uint32_t serverIp2 = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
         if (serverIp2 == (uint32_t)-1 || serverIp2 == 0)
         {
-            return (false);
+            return false;
         }
 
         char serverIpByDNS[64] = "";
@@ -305,7 +303,7 @@ CMsgClient::Init(IProReactor*        reactor,
         if (m_reactor != NULL || m_sslConfig != NULL || m_msgClient != NULL ||
             m_reconnector != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.msgc_enable_ssl)
@@ -321,7 +319,7 @@ CMsgClient::Init(IProReactor*        reactor,
             {
                 if (!configInfo.msgc_ssl_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.msgc_ssl_cafiles[i][0]);
+                    caFiles.push_back(configInfo.msgc_ssl_cafiles[i].c_str());
                 }
             }
 
@@ -332,7 +330,7 @@ CMsgClient::Init(IProReactor*        reactor,
             {
                 if (!configInfo.msgc_ssl_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.msgc_ssl_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.msgc_ssl_crlfiles[i].c_str());
                 }
             }
 
@@ -370,11 +368,7 @@ CMsgClient::Init(IProReactor*        reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(
-                    sslConfig,
-                    &suites[0],
-                    suites.size()
-                    ))
+                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
                 {
                     goto EXIT;
                 }
@@ -398,8 +392,10 @@ CMsgClient::Init(IProReactor*        reactor,
         {
             goto EXIT;
         }
-
-        msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
+        else
+        {
+            msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
+        }
 
         reconnector = CMsgReconnector::CreateInstance();
         if (reconnector == NULL || !reconnector->Init(this, reactor))
@@ -414,7 +410,7 @@ CMsgClient::Init(IProReactor*        reactor,
         m_reconnector   = reconnector;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -427,7 +423,7 @@ EXIT:
     DeleteRtpMsgClient(msgClient);
     ProSslClientConfig_Delete(sslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -467,17 +463,13 @@ CMsgClient::Fini()
 unsigned long
 CMsgClient::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CMsgClient::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 RTP_MM_TYPE
@@ -491,7 +483,7 @@ CMsgClient::GetMmType() const
         mmType = m_msgConfigInfo.msgc_mm_type;
     }
 
-    return (mmType);
+    return mmType;
 }
 
 void
@@ -523,7 +515,7 @@ CMsgClient::GetSslSuite(char suiteName[64]) const
         }
     }
 
-    return (suiteName);
+    return suiteName;
 }
 
 const char*
@@ -540,7 +532,7 @@ CMsgClient::GetLocalIp(char localIp[64]) const
         }
     }
 
-    return (localIp);
+    return localIp;
 }
 
 unsigned short
@@ -557,7 +549,7 @@ CMsgClient::GetLocalPort() const
         }
     }
 
-    return (localPort);
+    return localPort;
 }
 
 const char*
@@ -569,7 +561,7 @@ CMsgClient::GetRemoteIp(char remoteIp[64]) const
         strncpy_pro(remoteIp, 64, m_msgConfigInfo.msgc_server_ip.c_str());
     }
 
-    return (remoteIp);
+    return remoteIp;
 }
 
 unsigned short
@@ -583,7 +575,7 @@ CMsgClient::GetRemotePort() const
         remotePort = m_msgConfigInfo.msgc_server_port;
     }
 
-    return (remotePort);
+    return remotePort;
 }
 
 bool
@@ -612,34 +604,31 @@ CMsgClient::SendMsg2(const void*         buf1,
 
         if (m_reactor == NULL || m_msgClient == NULL)
         {
-            return (false);
+            return false;
         }
 
         m_msgClient->AddRef();
         msgClient = m_msgClient;
     }
 
-    const bool ret = msgClient->SendMsg2(
-        buf1, size1, buf2, size2, charset, dstUsers, dstUserCount);
+    bool ret = msgClient->SendMsg2(buf1, size1, buf2, size2, charset, dstUsers, dstUserCount);
     msgClient->Release();
 
-    return (ret);
+    return ret;
 }
 
 void
 CMsgClient::SetOutputRedline(size_t redlineBytes)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_reactor == NULL || m_msgClient == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_reactor == NULL || m_msgClient == NULL)
-        {
-            return;
-        }
-
-        m_msgClient->SetOutputRedline(redlineBytes);
-        m_msgConfigInfo.msgc_redline_bytes = (unsigned int)m_msgClient->GetOutputRedline();
+        return;
     }
+
+    m_msgClient->SetOutputRedline(redlineBytes);
+    m_msgConfigInfo.msgc_redline_bytes = (unsigned int)m_msgClient->GetOutputRedline();
 }
 
 size_t
@@ -681,13 +670,13 @@ CMsgClient::Reconnect()
 
         if (m_reactor == NULL || m_reconnector == NULL)
         {
-            return (false);
+            return false;
         }
 
         m_reconnector->Reconnect(m_msgConfigInfo.msgc_reconnect_interval);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -703,7 +692,7 @@ CMsgClient::Reconnect_i()
             return;
         }
 
-        IRtpMsgClient* const msgClient = CreateRtpMsgClient(
+        IRtpMsgClient* msgClient = CreateRtpMsgClient(
             this,
             m_reactor,
             m_msgConfigInfo.msgc_mm_type,
@@ -741,8 +730,7 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
-        myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -790,7 +778,7 @@ CMsgClient::OnOkMsg(IRtpMsgClient*      msgClient,
 void
 CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
-                      unsigned long       size,
+                      size_t              size,
                       uint16_t            charset,
                       const RTP_MSG_USER* srcUser)
 {
@@ -819,7 +807,7 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
 
     if (0)
     {{{
-        const CProStlString msg((char*)buf, size);
+        CProStlString msg((char*)buf, size);
 
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
@@ -847,8 +835,8 @@ CMsgClient::OnRecvMsg(IRtpMsgClient*      msgClient,
 
 void
 CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
-                       long           errorCode,
-                       long           sslCode,
+                       int            errorCode,
+                       int            sslCode,
                        bool           tcpConnected)
 {
     assert(msgClient != NULL);
@@ -889,8 +877,8 @@ CMsgClient::OnCloseMsg(IRtpMsgClient* msgClient,
             (unsigned int)myUser.classId,
             (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (int)tcpConnected,
             m_msgConfigInfo.msgc_server_ip.c_str(),
             (unsigned int)m_msgConfigInfo.msgc_server_port

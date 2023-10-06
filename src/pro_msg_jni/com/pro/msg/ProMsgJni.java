@@ -137,7 +137,7 @@ public class ProMsgJni
         short[] patch_1
         );
 
-    public static native boolean init(long threadCount); /* 1 ~ (2/20) ~ 100 */
+    public static native boolean init(int threadCount); /* 1 ~ (2/20) ~ 100 */
 
     public static native void fini();
 

@@ -50,7 +50,7 @@ public:
 
     virtual unsigned long Release();
 
-    void Reconnect(unsigned long intervalInSeconds);
+    void Reconnect(unsigned int intervalInSeconds);
 
 private:
 
@@ -61,6 +61,7 @@ private:
     virtual void OnTimer(
         void*    factory,
         uint64_t timerId,
+        int64_t  tick,
         int64_t  userData
         );
 
@@ -68,8 +69,8 @@ private:
 
     CMsgClient*     m_client;
     IProReactor*    m_reactor;
-    PRO_UINT64      m_timerId;
-    PRO_INT64       m_connectTick;
+    uint64_t        m_timerId;
+    int64_t         m_connectTick;
     CProThreadMutex m_lock;
 
     DECLARE_SGI_POOL(0)

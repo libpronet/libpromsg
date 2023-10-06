@@ -51,21 +51,21 @@ public:
     virtual void OnRecvMsg(
         CMsgClient2*        msgClient,
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
 
     virtual void OnCloseMsg(
         CMsgClient2* msgClient,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         ) = 0;
 
     virtual void OnHeartbeatMsg(
         CMsgClient2* msgClient,
-        PRO_INT64    peerAliveTick
+        int64_t      peerAliveTick
         ) = 0;
 };
 
@@ -107,15 +107,15 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,
-        long           sslCode,
+        int            errorCode,
+        int            sslCode,
         bool           tcpConnected
         );
 

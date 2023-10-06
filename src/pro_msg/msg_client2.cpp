@@ -31,9 +31,7 @@
 CMsgClient2*
 CMsgClient2::CreateInstance()
 {
-    CMsgClient2* const client = new CMsgClient2;
-
-    return (client);
+    return new CMsgClient2;
 }
 
 CMsgClient2::CMsgClient2()
@@ -60,7 +58,7 @@ CMsgClient2::Init(IMsgClientObserver* observer,
     assert(observer != NULL);
     if (observer == NULL)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -69,20 +67,20 @@ CMsgClient2::Init(IMsgClientObserver* observer,
         assert(m_observer == NULL);
         if (m_observer != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!CMsgClient::Init(reactor, configFileName, mmType,
             serverIp, serverPort, user, password, localIp))
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
         m_observer = observer;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -116,8 +114,7 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
-        myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -173,7 +170,7 @@ CMsgClient2::OnOkMsg(IRtpMsgClient*      msgClient,
 void
 CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
                        const void*         buf,
-                       unsigned long       size,
+                       size_t              size,
                        uint16_t            charset,
                        const RTP_MSG_USER* srcUser)
 {
@@ -207,7 +204,7 @@ CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
 
     if (0)
     {{{
-        const CProStlString msg((char*)buf, size);
+        CProStlString msg((char*)buf, size);
 
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
@@ -238,8 +235,8 @@ CMsgClient2::OnRecvMsg(IRtpMsgClient*      msgClient,
 
 void
 CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
-                        long           errorCode,
-                        long           sslCode,
+                        int            errorCode,
+                        int            sslCode,
                         bool           tcpConnected)
 {
     assert(msgClient != NULL);
@@ -285,8 +282,8 @@ CMsgClient2::OnCloseMsg(IRtpMsgClient* msgClient,
             (unsigned int)myUser.classId,
             (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (int)tcpConnected,
             m_msgConfigInfo.msgc_server_ip.c_str(),
             (unsigned int)m_msgConfigInfo.msgc_server_port

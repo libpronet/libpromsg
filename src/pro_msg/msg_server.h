@@ -39,6 +39,7 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_hub_port            = 3000;
         msgs_password_cid1       = "test";
         msgs_password_cid2       = "test";
+        msgs_password_cid255     = "test";
         msgs_password_cidx       = "test";
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes       = 1024000;
@@ -66,21 +67,27 @@ struct MSG_SERVER_CONFIG_INFO
         {
             ProZeroMemory(&msgs_password_cid2[0], msgs_password_cid2.length());
         }
+        if (!msgs_password_cid255.empty())
+        {
+            ProZeroMemory(&msgs_password_cid255[0], msgs_password_cid255.length());
+        }
         if (!msgs_password_cidx.empty())
         {
             ProZeroMemory(&msgs_password_cidx[0], msgs_password_cidx.length());
         }
 
-        msgs_password_cid1 = "";
-        msgs_password_cid2 = "";
-        msgs_password_cidx = "";
+        msgs_password_cid1   = "";
+        msgs_password_cid2   = "";
+        msgs_password_cid255 = "";
+        msgs_password_cidx   = "";
     }
 
-    RTP_MM_TYPE                  msgs_mm_type;       /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
+    RTP_MM_TYPE                  msgs_mm_type;         /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     unsigned short               msgs_hub_port;
-    CProStlString                msgs_password_cid1; /* for 1-... */
-    CProStlString                msgs_password_cid2; /* for 2-... */
-    CProStlString                msgs_password_cidx; /* for x-... */
+    CProStlString                msgs_password_cid1;   /* for 1-... */
+    CProStlString                msgs_password_cid2;   /* for 2-... */
+    CProStlString                msgs_password_cid255; /* for 255-... */
+    CProStlString                msgs_password_cidx;   /* for x-... */
     unsigned int                 msgs_handshake_timeout;
     unsigned int                 msgs_redline_bytes;
 
@@ -165,8 +172,8 @@ protected:
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
         const RTP_MSG_USER* c2sUser, /* = NULL */
-        const char          hash[32],
-        const char          nonce[32],
+        const unsigned char hash[32],
+        const unsigned char nonce[32],
         uint64_t*           userId,
         uint16_t*           instId,
         int64_t*            appData,
@@ -184,8 +191,8 @@ protected:
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode,
-        long                sslCode
+        int                 errorCode,
+        int                 sslCode
         );
 
     virtual void OnHeartbeatUser(
@@ -197,7 +204,7 @@ protected:
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );

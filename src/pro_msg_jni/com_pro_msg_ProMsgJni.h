@@ -18,10 +18,10 @@ JNIEXPORT void JNICALL Java_com_pro_msg_ProMsgJni_getCoreVersion
 /*
  * Class:     com_pro_msg_ProMsgJni
  * Method:    init
- * Signature: (J)Z
+ * Signature: (I)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_pro_msg_ProMsgJni_init
-  (JNIEnv *, jclass, jlong);
+  (JNIEnv *, jclass, jint);
 
 /*
  * Class:     com_pro_msg_ProMsgJni

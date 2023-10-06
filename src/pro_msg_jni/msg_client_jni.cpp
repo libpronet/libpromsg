@@ -58,13 +58,13 @@ CMsgClientJni::CreateInstance(JNIEnv* env,
     assert(listener != NULL);
     if (env == NULL || listener == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    const jclass clazz = env->GetObjectClass(listener);
+    jclass clazz = env->GetObjectClass(listener);
     if (clazz == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
     jmethodID onOkMsg        = NULL;
@@ -76,38 +76,38 @@ CMsgClientJni::CreateInstance(JNIEnv* env,
         "(JLcom/pro/msg/ProMsgJni$PRO_MSG_USER;Ljava/lang/String;)V");
     if (onOkMsg == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
     onRecvMsg = env->GetMethodID(clazz, "msgClientOnRecv",
         "(J[BILcom/pro/msg/ProMsgJni$PRO_MSG_USER;)V");
     if (onRecvMsg == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
     onCloseMsg = env->GetMethodID(clazz, "msgClientOnClose", "(JIIZ)V");
     if (onCloseMsg == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
     onHeartbeatMsg = env->GetMethodID(clazz, "msgClientOnHeartbeat", "(JJ)V");
     if (onHeartbeatMsg == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
-    const jobject listener2 = env->NewGlobalRef(listener);
+    jobject listener2 = env->NewGlobalRef(listener);
     if (listener2 == NULL || env->ExceptionCheck())
     {
-        return (NULL);
+        return NULL;
     }
 
-    CMsgClientJni* const client = new CMsgClientJni(
+    CMsgClientJni* client = new CMsgClientJni(
         listener2, onOkMsg, onRecvMsg, onCloseMsg, onHeartbeatMsg);
 
-    return (client);
+    return client;
 }
 
 CMsgClientJni::CMsgClientJni(jobject   listener,
@@ -128,7 +128,7 @@ CMsgClientJni::~CMsgClientJni()
 {
     Fini();
 
-    JNIEnv* const env = JniUtilAttach();
+    JNIEnv* env = JniUtilAttach();
     if (env != NULL)
     {
         env->DeleteGlobalRef(m_listener);
@@ -145,8 +145,7 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
-        myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -165,13 +164,13 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
         }
     }
 
-    JNIEnv* const env = JniUtilAttach();
+    JNIEnv* env = JniUtilAttach();
     if (env == NULL)
     {
         return;
     }
 
-    const jobject javaUser = NewJavaUser_i(env, *myUser);
+    jobject javaUser = NewJavaUser_i(env, *myUser);
     if (javaUser == NULL)
     {
         JniUtilDetach();
@@ -179,7 +178,7 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    const jstring javaPublicIp = NewJavaString_i(env, myPublicIp);
+    jstring javaPublicIp = NewJavaString_i(env, myPublicIp);
     if (javaPublicIp == NULL)
     {
         env->DeleteLocalRef(javaUser);
@@ -203,7 +202,7 @@ CMsgClientJni::OnOkMsg(IRtpMsgClient*      msgClient,
 void
 CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
                          const void*         buf,
-                         unsigned long       size,
+                         size_t              size,
                          uint16_t            charset,
                          const RTP_MSG_USER* srcUser)
 {
@@ -230,13 +229,13 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
         }
     }
 
-    JNIEnv* const env = JniUtilAttach();
+    JNIEnv* env = JniUtilAttach();
     if (env == NULL)
     {
         return;
     }
 
-    const jbyteArray javaBuf = env->NewByteArray(size);
+    jbyteArray javaBuf = env->NewByteArray((jsize)size);
     if (javaBuf == NULL || env->ExceptionCheck())
     {
         JniUtilDetach();
@@ -244,7 +243,7 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    env->SetByteArrayRegion(javaBuf, 0, size, (jbyte*)buf);
+    env->SetByteArrayRegion(javaBuf, 0, (jsize)size, (jbyte*)buf);
     if (env->ExceptionCheck())
     {
         env->DeleteLocalRef(javaBuf);
@@ -253,7 +252,7 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    const jobject javaUser = NewJavaUser_i(env, *srcUser);
+    jobject javaUser = NewJavaUser_i(env, *srcUser);
     if (javaUser == NULL)
     {
         env->DeleteLocalRef(javaBuf);
@@ -277,8 +276,8 @@ CMsgClientJni::OnRecvMsg(IRtpMsgClient*      msgClient,
 
 void
 CMsgClientJni::OnCloseMsg(IRtpMsgClient* msgClient,
-                          long           errorCode,
-                          long           sslCode,
+                          int            errorCode,
+                          int            sslCode,
                           bool           tcpConnected)
 {
     assert(msgClient != NULL);
@@ -301,7 +300,7 @@ CMsgClientJni::OnCloseMsg(IRtpMsgClient* msgClient,
         }
     }
 
-    JNIEnv* const env = JniUtilAttach();
+    JNIEnv* env = JniUtilAttach();
     if (env == NULL)
     {
         return;
@@ -342,7 +341,7 @@ CMsgClientJni::OnHeartbeatMsg(IRtpMsgClient* msgClient,
         }
     }
 
-    JNIEnv* const env = JniUtilAttach();
+    JNIEnv* env = JniUtilAttach();
     if (env == NULL)
     {
         return;

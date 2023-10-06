@@ -170,15 +170,15 @@ protected:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,
-        long           sslCode,
+        int            errorCode,
+        int            sslCode,
         bool           tcpConnected
         );
 
