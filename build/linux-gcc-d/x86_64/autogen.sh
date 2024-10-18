@@ -33,8 +33,8 @@ CPPFLAGS="-D_DEBUG          \
           -D_GNU_SOURCE     \
           -D_LIBC_REENTRANT \
           -D_REENTRANT"     \
-CFLAGS="  -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
-CXXFLAGS="-g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CFLAGS="  -std=c++11 -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CXXFLAGS="-std=c++11 -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 LDFLAGS="" $@
 
 rm -f ./configure
