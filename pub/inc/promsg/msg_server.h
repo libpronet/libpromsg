@@ -113,6 +113,7 @@ public:
 
     bool Init(
         IProReactor*   reactor,
+        const char*    argv0,         /* = NULL */
         const char*    configFileName,
         RTP_MM_TYPE    mmType,        /* = 0 */
         unsigned short serviceHubPort /* = 0 */

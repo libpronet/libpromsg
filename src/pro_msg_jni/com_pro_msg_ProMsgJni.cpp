@@ -540,7 +540,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
             return 0;
         }
 
-        if (!client->Init(g_s_reactor, cppConfigFileName, cppMmType,
+        if (!client->Init(g_s_reactor, NULL, cppConfigFileName, cppMmType,
             cppServerIp, cppServerPort, &cppUser, cppPassword, cppLocalIp))
         {
             client->Release();
@@ -1186,7 +1186,7 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
             return 0;
         }
 
-        if (!server->Init(g_s_reactor, cppConfigFileName, cppMmType, cppServiceHubPort))
+        if (!server->Init(g_s_reactor, NULL, cppConfigFileName, cppMmType, cppServiceHubPort))
         {
             server->Release();
 

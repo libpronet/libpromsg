@@ -33,7 +33,7 @@ CPPFLAGS="-DNDEBUG          \
           -D_GNU_SOURCE     \
           -D_LIBC_REENTRANT \
           -D_REENTRANT"     \
-CFLAGS="  -std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CFLAGS="             -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 CXXFLAGS="-std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 LDFLAGS="" $@
 

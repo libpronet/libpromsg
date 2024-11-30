@@ -47,6 +47,7 @@ CMsgClient2::~CMsgClient2()
 bool
 CMsgClient2::Init(IMsgClientObserver* observer,
                   IProReactor*        reactor,
+                  const char*         argv0,      /* = NULL */
                   const char*         configFileName,
                   RTP_MM_TYPE         mmType,     /* = 0 */
                   const char*         serverIp,   /* = NULL */
@@ -70,7 +71,7 @@ CMsgClient2::Init(IMsgClientObserver* observer,
             return false;
         }
 
-        if (!CMsgClient::Init(reactor, configFileName, mmType,
+        if (!CMsgClient::Init(reactor, argv0, configFileName, mmType,
             serverIp, serverPort, user, password, localIp))
         {
             return false;

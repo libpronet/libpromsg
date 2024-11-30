@@ -35,11 +35,12 @@
 
 static
 void
-ReadConfig_i(CProStlVector<PRO_CONFIG_ITEM>& configs,
+ReadConfig_i(const char*                     argv0,
+             CProStlVector<PRO_CONFIG_ITEM>& configs,
              MSG_CLIENT_CONFIG_INFO&         configInfo)
 {
     char exeRoot[1024] = "";
-    ProGetExeDir_(exeRoot);
+    ProGetExeDir_(exeRoot, argv0);
 
     configInfo.msgc_ssl_cafiles.clear();
     configInfo.msgc_ssl_crlfiles.clear();
@@ -205,6 +206,7 @@ CMsgClient::~CMsgClient()
 
 bool
 CMsgClient::Init(IProReactor*        reactor,
+                 const char*         argv0,      /* = NULL */
                  const char*         configFileName,
                  RTP_MM_TYPE         mmType,     /* = 0 */
                  const char*         serverIp,   /* = NULL */
@@ -222,7 +224,7 @@ CMsgClient::Init(IProReactor*        reactor,
     }
 
     char exeRoot[1024] = "";
-    ProGetExeDir_(exeRoot);
+    ProGetExeDir_(exeRoot, argv0);
 
     CProStlString configFileName2 = configFileName;
     if (configFileName2[0] == '.' ||
@@ -243,7 +245,7 @@ CMsgClient::Init(IProReactor*        reactor,
     }
 
     MSG_CLIENT_CONFIG_INFO configInfo;
-    ReadConfig_i(configs, configInfo);
+    ReadConfig_i(argv0, configs, configInfo);
 
     /*
      * override
