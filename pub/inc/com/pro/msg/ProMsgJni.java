@@ -21,7 +21,7 @@ package com.pro.msg;
 /*
  * please refer to "libpronet/pub/inc/pronet/rtp_msg.h"
  *
- * the file's version is [2.4.0]
+ * the file's version is [2.4.1]
  */
 public class ProMsgJni
 {
@@ -146,7 +146,7 @@ public class ProMsgJni
     public static native long msgClientCreate(
         MsgClientListener listener,
         String            configFileName,
-        short             mmType,     /* = 0, 11 ~ 20 */
+        short             mmType,     /* = 0, 10 ~ 69 */
         String            serverIp,   /* = null */
         int               serverPort, /* = 0, 1 ~ 65535 */
         PRO_MSG_USER      user,       /* = null */
@@ -201,7 +201,7 @@ public class ProMsgJni
     public static native long msgServerCreate(
         MsgServerListener listener,
         String            configFileName,
-        short             mmType,        /* = 0, 11 ~ 20 */
+        short             mmType,        /* = 0, 10 ~ 69 */
         int               serviceHubPort /* = 0, 1 ~ 65535 */
         );
 

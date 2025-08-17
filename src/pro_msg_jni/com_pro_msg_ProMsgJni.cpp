@@ -422,7 +422,7 @@ Java_com_pro_msg_ProMsgJni_msgClientCreate(JNIEnv* env,
                                            jclass  clazz,
                                            jobject listener,
                                            jstring configFileName,
-                                           jshort  mmType,     /* = 0, 11 ~ 20 */
+                                           jshort  mmType,     /* = 0, 10 ~ 69 */
                                            jstring serverIp,   /* = null */
                                            jint    serverPort, /* = 0, 1 ~ 65535 */
                                            jobject user,       /* = null */
@@ -1129,7 +1129,7 @@ Java_com_pro_msg_ProMsgJni_msgServerCreate(JNIEnv* env,
                                            jclass  clazz,
                                            jobject listener,
                                            jstring configFileName,
-                                           jshort  mmType,         /* = 0, 11 ~ 20 */
+                                           jshort  mmType,         /* = 0, 10 ~ 69 */
                                            jint    serviceHubPort) /* = 0, 1 ~ 65535 */
 {
     assert(listener != NULL);
